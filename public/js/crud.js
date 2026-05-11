@@ -1,0 +1,101 @@
+function initCrud({ routes, fields, columns }) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    const modal = $('#crudModal');
+    const form = $('#crudForm');
+
+    // Initialize DataTable
+    const table = $('#dataTable').DataTable({
+        responsive:true,
+        autoWidth:false,
+        processing: true,
+        serverSide: true,
+        ajax: routes.data,
+        columns: [
+            { data: 'DT_RowIndex', orderable: false, searchable: false },
+
+            ...columns.map(col => ({
+                data: col.field,
+                orderable: col.orderable ?? true,
+                searchable: col.searchable ?? true
+            })),
+
+            { data: 'action', orderable: false, searchable: false }
+        ]
+    });
+
+    // OPEN CREATE
+    $('.btn-create').click(() => {
+        form.trigger('reset');
+        form.attr('action', routes.store);
+        $('#formMethod').val('POST');
+        $('#modalTitle').text('Tambah');
+        modal.modal('show');
+    });
+
+    // OPEN EDIT
+    $(document).on('click', '.btn-edit', function () {
+        const id = $(this).data('id');
+
+        form.attr('action', routes.update(id));
+        $('#formMethod').val('PUT');
+        $('#modalTitle').text('Edit');
+
+        $.get(routes.edit(id), res => {
+            console.log("result: ",res);
+            for(let key in fields){
+                if(key !== fields[key]){
+                    if(fields[key] == 'checkbox'){
+                        $('#' + key).prop('checked', true);
+                    }
+                    $('#' + key).val(res[key]).trigger('change');
+                }
+                $('#' + fields[key]).val(res[fields[key]]);
+            }
+        });
+
+        modal.modal('show');
+    });
+
+    // DELETE
+    $(document).on('click', '.btn-delete', function () {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+
+        Swal.fire({
+            title: 'Anda yakin?',
+            text: "Anda yakin ingin menghapus " + name + "?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Tidak, batalkan!',
+        }).then(r => {
+            if (!r.isConfirmed){
+                return Swal.fire({
+                    title: 'Dibatalkan',
+                    text: 'Data tidak jadi dihapus.',
+                    icon: 'error'
+                });
+            };
+
+            destroy(id);
+        });
+    });
+
+    function destroy(id) {
+        $.post(routes.destroy(id), {
+            _method: 'DELETE'
+        })
+        .done(() => {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Data berhasil dihapus.',
+                icon: 'success'
+            }).then(() => table.draw());
+        });
+    }
+}
