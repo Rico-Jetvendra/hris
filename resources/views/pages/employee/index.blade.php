@@ -19,7 +19,9 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header">
-                        <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
+                        @if(in_array('employee.add', session('permission', [])))
+                            <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
+                        @endif
                         <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button>
                     </div>
 
@@ -283,6 +285,7 @@
 <script src="/js/crud.js"></script>
 <script>
     let columns = @json($columns);
+    let permissions = @json(session('permission'));
 
     initCrud({
         routes: {
@@ -320,7 +323,8 @@
             'entry_date': 'entry_date',
             'end_of_contract': 'end_of_contract',
         },
-        columns: columns
+        columns: columns,
+        permissions: permissions
     });
 
 

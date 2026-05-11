@@ -1,12 +1,32 @@
-function initCrud({ routes, fields, columns }) {
+const { xor } = require("lodash");
+
+function initCrud({ routes, fields, columns, permissions }) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    const modal = $('#crudModal');
-    const form = $('#crudForm');
+    const modal         = $('#crudModal');
+    const form          = $('#crudForm');
+    const segment1      = window.location.pathname.split('/').filter(Boolean)[0];
+    const tableColumns  = [
+        { data: 'DT_RowIndex', orderable: false, searchable: false },
+
+        ...columns.map(col => ({
+            data: col.field,
+            orderable: col.orderable ?? true,
+            searchable: col.searchable ?? true
+        })),
+    ];
+
+    if(permissions.includes(segment1+'.edit') || permissions.includes(segment1+'.delete')){
+        tableColumns.push({
+            data: 'action',
+            orderable: false,
+            searchable: false
+        });
+    }
 
     // Initialize DataTable
     const table = $('#dataTable').DataTable({
@@ -15,17 +35,7 @@ function initCrud({ routes, fields, columns }) {
         processing: true,
         serverSide: true,
         ajax: routes.data,
-        columns: [
-            { data: 'DT_RowIndex', orderable: false, searchable: false },
-
-            ...columns.map(col => ({
-                data: col.field,
-                orderable: col.orderable ?? true,
-                searchable: col.searchable ?? true
-            })),
-
-            { data: 'action', orderable: false, searchable: false }
-        ]
+        columns: tableColumns
     });
 
     // OPEN CREATE

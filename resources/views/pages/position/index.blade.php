@@ -39,6 +39,7 @@
 
 <script>
     let columns = @json($columns);
+    let permissions = @json(session('permission'));
 
     initCrud({
         routes: {
@@ -52,6 +53,7 @@
             'position_name': 'position_name',
             'remarks': 'remarks'
         },
-        columns: columns
+        columns: columns,
+        permissions: permissions
     });
 </script>

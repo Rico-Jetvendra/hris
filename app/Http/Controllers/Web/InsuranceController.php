@@ -63,14 +63,23 @@ class InsuranceController extends Controller{
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
-                return '
+                $buttons = '';
+
+                if(in_array('insurance.edit', session('permission', []))){
+                    $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->insurance_id.'">
                         <i class="bi bi-pencil"></i>
-                    </button>
+                    </button>';
+                }
+
+                if(in_array('insurance.delete', session('permission', []))){
+                    $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->insurance_id.'" data-name="'.$row->insurance_name.'">
                         <i class="bi bi-trash"></i>
-                    </button>
-                ';
+                    </button>';
+                }
+
+                return $buttons;
             })
             ->rawColumns(['action'])
             ->make(true);

@@ -2,11 +2,9 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable implements JWTSubject{
+class User extends Authenticatable{
     protected $connection = 'mysql2';
     protected $table = 'tbl_users';
     public $timestamps = false;
@@ -20,9 +18,14 @@ class User extends Authenticatable implements JWTSubject{
         "status",
         "active",
         "device_token",
+        "application_id",
         "app_version",
+        "no_hp",
+        "photo_profile",
         "token",
         "token_expiry",
+        "no_hp",
+        "photo_profile",
     ];
     protected $defaultSort = 'id';
 
@@ -40,6 +43,8 @@ class User extends Authenticatable implements JWTSubject{
         "token",
         "token_expiry",
         "login_date",
+        "no_hp",
+        "photo_profile",
         "created_date",
         "created_by",
         "updated_date",

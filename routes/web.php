@@ -29,18 +29,21 @@ use App\Http\Controllers\Web\{
 */
 Route::middleware(['web'])->name('web.')->group(function () {
     // Login Routes
-    Route::get('/', [LoginController::class, 'index'])->name('index');
+    Route::get('/signin', [LoginController::class, 'signin'])->name('signin');
     Route::post('/login', [LoginController::class, 'login'])->name('login');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/save-web-token-session', [LoginController::class, 'saveWebTokenSession']);
 
-    Route::middleware(['check.session'])->name('web.')->group(function () {
+    Route::middleware(['check.session'])->group(function () {
         // DataTables routes
-        Route::get('/position/data', [PositionController::class, 'data'])->name('position.data');
-        Route::get('/insurance/data', [InsuranceController::class, 'data'])->name('insurance.data');
-        Route::get('/company/data', [CompanyController::class, 'data'])->name('company.data');
-        Route::get('/employee/data', [EmployeeController::class, 'data'])->name('employee.data');
-        Route::get('/vehicle/data', [VehicleController::class, 'data'])->name('vehicle.data');
-        Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data');
-        Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data');
+        Route::get('/', [LoginController::class, 'index'])->name('index');
+        Route::get('/position/data', [PositionController::class, 'data'])->name('position.data')->middleware('permission:position');
+        Route::get('/insurance/data', [InsuranceController::class, 'data'])->name('insurance.data')->middleware('permission:insurance');
+        Route::get('/company/data', [CompanyController::class, 'data'])->name('company.data')->middleware('permission:company');
+        Route::get('/employee/data', [EmployeeController::class, 'data'])->name('employee.data')->middleware('permission:employee');
+        Route::get('/vehicle/data', [VehicleController::class, 'data'])->name('vehicle.data')->middleware('permission:vehicle');
+        Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data')->middleware('permission:department');
+        Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data')->middleware('permission:branch');
         // End DataTables
 
         // Custom Routes
@@ -48,13 +51,13 @@ Route::middleware(['web'])->name('web.')->group(function () {
         // End Custom Routes
 
         // Resources
-        Route::resource('branch', BranchController::class);
-        Route::resource('company', CompanyController::class);
-        Route::resource('department', DepartmentController::class);
-        Route::resource('employee', EmployeeController::class);
-        Route::resource('insurance', InsuranceController::class);
-        Route::resource('position', PositionController::class);
-        Route::resource('vehicle', VehicleController::class);
+        Route::resource('branch', BranchController::class)->middleware('permission:branch');
+        Route::resource('company', CompanyController::class)->middleware('permission:company');
+        Route::resource('department', DepartmentController::class)->middleware('permission:department');
+        Route::resource('employee', EmployeeController::class)->middleware('permission:employee');
+        Route::resource('insurance', InsuranceController::class)->middleware('permission:insurance');
+        Route::resource('position', PositionController::class)->middleware('permission:position');
+        Route::resource('vehicle', VehicleController::class)->middleware('permission:vehicle');
         Route::resource('user', UserController::class);
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);

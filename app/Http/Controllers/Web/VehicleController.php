@@ -64,14 +64,23 @@ class VehicleController extends Controller{
                 return $row->vehicle_insurance_start.' s/d '.$row->vehicle_insurance_end;
             })
             ->addColumn('action', function ($row) {
-                return '
+                $buttons = '';
+
+                if(in_array('vehicle.edit', session('permission', []))){
+                    $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->vehicle_id.'">
                         <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->vehicle_id.'" data-name="'.$row->vehicle_name.'">
+                    </button>';
+                }
+
+                if(in_array('vehicle.delete', session('permission', []))){
+                    $buttons .= '
+                    <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->vehicle_id.'" data-name="'.$row->vehicle_number.'">
                         <i class="bi bi-trash"></i>
-                    </button>
-                ';
+                    </button>';
+                }
+
+                return $buttons;
             })
             ->rawColumns(['action'])
             ->make(true);

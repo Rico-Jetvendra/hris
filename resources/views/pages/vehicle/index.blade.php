@@ -19,7 +19,9 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header">
-                        <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
+                        @if(in_array('vehicle.add', session('permission', [])))
+                            <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
+                        @endif
                         <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button>
                     </div>
 
@@ -31,7 +33,9 @@
                                     @foreach ($columns as $col)
                                         <th>{{ $col['label'] }}</th>
                                     @endforeach
-                                    <th width="80">Aksi</th>
+                                    @if(in_array('vehicle.edit', session('permission', [])) || in_array('vehicle.delete', session('permission', [])))
+                                        <th width="80">Aksi</th>
+                                    @endif
                                 </tr>
                             </thead>
 
@@ -170,6 +174,7 @@
 <script>
     let columns = @json($columns);
     let plate   = document.getElementById('vehicle_number');
+    let permissions = @json(session('permission'));
 
     initCrud({
         routes: {
@@ -200,7 +205,8 @@
 
             'remarks'                    : 'vehicle_remarks',
         },
-        columns: columns
+        columns: columns,
+        permissions: permissions
     });
 
     plate.addEventListener('input', (e) => {

@@ -1,8 +1,17 @@
 <div class="card">
     <div class="card-header">
-        <button class="btn btn-primary btn-create">
-            <i class="bi bi-plus"></i> Tambah
-        </button>
+        @php
+            $page   = request()->segment(1);
+            $add    = $page.'.add';
+            $edit   = $page.'.edit';
+            $delete = $page.'.delete';
+        @endphp
+
+        @if(in_array($add, session('permission', [])))
+            <button class="btn btn-primary btn-create">
+                <i class="bi bi-plus"></i> Tambah
+            </button>
+        @endif
     </div>
 
     <div class="card-body">
@@ -13,7 +22,10 @@
                     @foreach ($columns as $col)
                         <th>{{ $col['label'] }}</th>
                     @endforeach
-                    <th width="120">Aksi</th>
+
+                    @if(in_array($edit, session('permission', [])) || in_array($delete, session('permission', [])))
+                        <th width="120">Aksi</th>
+                    @endif
                 </tr>
             </thead>
 

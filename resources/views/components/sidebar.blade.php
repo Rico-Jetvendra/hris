@@ -31,14 +31,19 @@
               id="navigation"
             >
               @foreach (config('combobox.menu') as $item)
-                @if (!isset($item['children']))
-                    <li class="nav-item">
-                        <a href="{{ route($item['route']) }}"
-                        class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
-                            <i class="nav-icon bi {{ $item['icon'] }}"></i>
-                            <p>{{ $item['label'] }}</p>
-                        </a>
-                    </li>
+                @if(
+                    !isset($item['permission']) ||
+                    in_array($item['permission'], session('permission', []))
+                )
+                    @if (!isset($item['children']))
+                        <li class="nav-item">
+                            <a href="{{ route($item['route']) }}"
+                            class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+                                <i class="nav-icon bi {{ $item['icon'] }}"></i>
+                                <p>{{ $item['label'] }}</p>
+                            </a>
+                        </li>
+                    @endif
                 @endif
 
                 @if (isset($item['children']))
@@ -58,8 +63,19 @@
                             </p>
                         </a>
 
+                        @php
+                            $children = collect($item['children'])->filter(function($child){
+
+                                if(!isset($child['permission'])){
+                                    return true;
+                                }
+
+                                return in_array($child['permission'], session('permission', []));
+
+                            });
+                        @endphp
                         <ul class="nav nav-treeview">
-                            @foreach ($item['children'] as $child)
+                            @foreach ($children as $child)
                                 <li class="nav-item">
                                     <a href="{{ route($child['route']) }}"
                                     class="nav-link {{ request()->routeIs($child['route']) ? 'active' : '' }}">

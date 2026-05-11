@@ -49,6 +49,77 @@
         });
     </script>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRfYzr2qPCLKunvXEtb1DnTtX9SsL5OVw",
+            authDomain: "fcm-veron-salesapp.firebaseapp.com",
+            projectId: "fcm-veron-salesapp",
+            storageBucket: "fcm-veron-salesapp.firebasestorage.app",
+            messagingSenderId: "661546324879",
+            appId: "1:661546324879:web:ae94db9d19c8473658f1fa",
+            measurementId: "G-MDBQQNXVB7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        const VAPID_KEY = "BD5CzWSRAcM_DEr5wMPWIUplbQoWMUkOn9jXbg6aWH-i6ogpdVf9jzOF1xsLlTwCmJAm9y_jzUuNHUObw0_dSGo";
+
+        async function initWebPush() {
+            try {
+                const permission = await Notification.requestPermission();
+                const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js', {
+                    scope: '/taking-order/public/'
+                });
+
+                if (permission !== "granted") {
+                    console.log("Notification permission denied");
+                    return;
+                }
+
+                const token = await getToken(messaging, {
+                    vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration: registration
+                });
+
+                if (!token) {
+                    console.log("Failed to generate token");
+                    return;
+                }
+
+                sendTokenToSession(token);
+            } catch (err) {
+                console.error("Error getting token:", err);
+            }
+        }
+
+        @if (session('webpush_initialized') === false)
+            initWebPush();
+        @endif
+
+        async function sendTokenToSession(token) {
+            await fetch('./save-web-token-session', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Session updated:", data);
+            })
+            .catch(err => {
+                console.error("Error saving token to session:", err);
+            });
+        }
+    </script>
+
     @if(session('success'))
         <script>
             Swal.fire({

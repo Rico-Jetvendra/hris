@@ -63,14 +63,23 @@ class PositionController extends Controller{
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
-                return '
+                $buttons = '';
+
+                if(in_array('position.edit', session('permission', []))){
+                    $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->position_id.'">
                         <i class="bi bi-pencil"></i>
-                    </button>
+                    </button>';
+                }
+
+                if(in_array('position.delete', session('permission', []))){
+                    $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->position_id.'" data-name="'.$row->position_name.'">
                         <i class="bi bi-trash"></i>
-                    </button>
-                ';
+                    </button>';
+                }
+
+                return $buttons;
             })
             ->rawColumns(['action'])
             ->make(true);

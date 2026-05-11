@@ -2,21 +2,22 @@
     return [
         'menu' => [
             [
-                'label' => 'Dashboard',
-                'route' => 'web.index',
-                'icon'  => 'bi-house-fill',
+                'label'         => 'Dashboard',
+                'route'         => 'web.index',
+                'icon'          => 'bi-house-fill',
+                'permission'    => 'home'
             ],
             [
-                'label' => 'Master',
-                'icon'  => 'bi-gear',
+                'label'         => 'Master',
+                'icon'          => 'bi-gear',
                 'children' => [
-                    ['label' => 'Karyawan', 'route' => 'web.employee.index'],
-                    ['label' => 'Kendaraan', 'route' => 'web.vehicle.index'],
-                    ['label' => 'Asuransi', 'route' => 'web.insurance.index'],
-                    ['label' => 'Perusahaan', 'route' => 'web.company.index'],
-                    ['label' => 'Jabatan', 'route' => 'web.position.index'],
-                    ['label' => 'Departemen', 'route' => 'web.department.index'],
-                    ['label' => 'Cabang', 'route' => 'web.branch.index'],
+                    ['label' => 'Karyawan', 'route' => 'web.employee.index', 'permission' => 'employee'],
+                    ['label' => 'Kendaraan', 'route' => 'web.vehicle.index', 'permission' => 'vehicle'],
+                    ['label' => 'Asuransi', 'route' => 'web.insurance.index', 'permission' => 'insurance'],
+                    ['label' => 'Perusahaan', 'route' => 'web.company.index', 'permission' => 'company'],
+                    ['label' => 'Jabatan', 'route' => 'web.position.index', 'permission' => 'position'],
+                    ['label' => 'Departemen', 'route' => 'web.department.index', 'permission' => 'department'],
+                    ['label' => 'Cabang', 'route' => 'web.branch.index', 'permission' => 'branch'],
                 ]
             ]
         ],
