@@ -30,8 +30,8 @@
 <x-crud-modal
     title="Perusahaan"
     :fields="[
-        ['name' => 'company_name', 'label' => 'Nama Perusahaan', 'type' => 'text', 'required' => true],
-        ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
+        ['name' => 'company_name', 'id' => 'company_name', 'label' => 'Nama Perusahaan', 'type' => 'text', 'required' => true],
+        ['name' => 'remarks', 'id' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
     ]"
 />
 

@@ -8,13 +8,10 @@ use App\Http\Controllers\Web\{
     EmployeeController,
     InsuranceController,
     LoginController,
-    PermissionController,
+    NotificationController,
     PositionController,
-    RoleController,
-    RolePermissionController,
-    UserController,
-    UserRoleController,
-    VehicleController
+    VehicleController,
+    VehicleAssignmentController
 };
 
 /*
@@ -44,10 +41,14 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::get('/vehicle/data', [VehicleController::class, 'data'])->name('vehicle.data')->middleware('permission:vehicle');
         Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data')->middleware('permission:department');
         Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data')->middleware('permission:branch');
+        Route::get('/vehicle-assignment/data', [VehicleAssignmentController::class, 'data'])->name('vehicle-assignment.data')->middleware('permission:vehicle_assignment');
         // End DataTables
 
         // Custom Routes
         Route::post('/employee/upload', [EmployeeController::class, 'upload'])->name('employee.upload');
+        Route::post('/vehicle/upload', [VehicleController::class, 'upload'])->name('vehicle.upload');
+
+        Route::post('/due-email', [NotificationController::class, 'sendDueEmail'])->name('due.email');
         // End Custom Routes
 
         // Resources
@@ -58,11 +59,7 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::resource('insurance', InsuranceController::class)->middleware('permission:insurance');
         Route::resource('position', PositionController::class)->middleware('permission:position');
         Route::resource('vehicle', VehicleController::class)->middleware('permission:vehicle');
-        Route::resource('user', UserController::class);
-        Route::resource('role', RoleController::class);
-        Route::resource('permission', PermissionController::class);
-        Route::resource('role-permission', RolePermissionController::class);
-        Route::resource('user-role', UserRoleController::class);
+        Route::resource('vehicle-assignment', VehicleAssignmentController::class)->middleware('permission:vehicle_assignment');
         // End Resources
 
     });

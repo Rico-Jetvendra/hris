@@ -30,8 +30,8 @@
 <x-crud-modal
     title="Cabang"
     :fields="[
-        ['name' => 'branch_name', 'label' => 'Nama Cabang', 'type' => 'text', 'required' => true],
-        ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
+        ['name' => 'branch_name', 'id' => 'branch_name', 'label' => 'Nama Cabang', 'type' => 'text', 'required' => true],
+        ['name' => 'remarks', 'id' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
     ]"
 />
 

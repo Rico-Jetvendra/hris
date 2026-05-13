@@ -1,18 +1,18 @@
 @php
-    $select = collect($selects)->firstWhere('name', $field['name']);
+    $currentSelect = collect($selects)->firstWhere('name', $field['name']);
 @endphp
 
 <select
-    name="{{ $field['name'] }}"
-    id="{{ $field['name'] }}"
-    class="form-control"
+    class="form-select searchable-select"
+    name="{{ $field['id'] }}"
+    id="{{ $field['id'] }}"
     {{ $field['required'] ? 'required' : '' }}
 >
-    <option value="">-- Select {{ $field['label'] }} --</option>
+    <option value="">-- Pilih {{ $field['label'] }} --</option>
 
-    @foreach ($select['data'] ?? [] as $option)
-        <option value="{{ $option->{$select['id']} }}">
-            {{ $option->{$select['text']} }}
+    @foreach ($currentSelect['selects'] ?? [] as $option)
+        <option value="{{ $option->{$field['id']} }}">
+            {{ $option->{$field['name']} }}
         </option>
     @endforeach
 </select>

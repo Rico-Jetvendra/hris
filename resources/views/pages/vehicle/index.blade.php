@@ -22,10 +22,11 @@
                         @if(in_array('vehicle.add', session('permission', [])))
                             <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
                         @endif
-                        <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button>
+                        <!-- <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button> -->
                     </div>
 
                     <div class="card-body">
+                        <input type="hidden" id="defaultSearch" value="{{ request('search') }}">
                         <table id="dataTable" class="table table-responsive table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -69,8 +70,8 @@
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_company">Perusahaan</label>
-                                <select class="form-control" name="vehicle_company" id="vehicle_company" required>
-                                    <option value="0">----- Pilih Perusahaan -----</option>
+                                <select class="form-control searchable-select" name="vehicle_company" id="vehicle_company" required>
+                                    <option value="">----- Pilih Perusahaan -----</option>
                                     @foreach($combo['company'] as $value)
                                         <option value="{{ $value['company_id'] }}">{{ $value['company_name'] }}</option>
                                     @endforeach
@@ -82,8 +83,8 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_brand">Merk</label>
-                                <select class="form-control" name="vehicle_brand" id="vehicle_brand" required>
-                                    <option value="0">----- Pilih Merk -----</option>
+                                <select class="form-control searchable-select" name="vehicle_brand" id="vehicle_brand" required>
+                                    <option value="">----- Pilih Merk -----</option>
                                     @foreach($combo['brands'] as $value)
                                         <option value="{{ $value['id'] }}">{{ $value['name'] }}</option>
                                     @endforeach
@@ -91,8 +92,8 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_color">Warna</label>
-                                <select class="form-control" name="vehicle_color" id="vehicle_color" required>
-                                    <option value="0">----- Pilih Warna -----</option>
+                                <select class="form-control searchable-select" name="vehicle_color" id="vehicle_color" required>
+                                    <option value="">----- Pilih Warna -----</option>
                                     @foreach($combo['colors'] as $value)
                                         <option value="{{ $value['id'] }}">{{ $value['name'] }}</option>
                                     @endforeach
@@ -123,8 +124,8 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_insurance">Asuransi</label>
-                                <select class="form-control" name="vehicle_insurance" id="vehicle_insurance" required>
-                                    <option value="0">----- Pilih Asuransi -----</option>
+                                <select class="form-control searchable-select" name="vehicle_insurance" id="vehicle_insurance" required>
+                                    <option value="">----- Pilih Asuransi -----</option>
                                     @foreach($combo['insurance'] as $value)
                                         <option value="{{ $value['insurance_id'] }}">{{ $value['insurance_name'] }}</option>
                                     @endforeach
@@ -168,6 +169,40 @@
     </div>
 </div>
 
+<div class="modal fade" id="uploadModal" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form method="POST" action="{{ route('web.vehicle.upload') }}" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span id="modalTitle">Upload</span> Kendaraan
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="mb-3">
+                                <label class="form-label" for="file">File Kendaraan</label>
+                                <input class="form-control" type="file" name="file" id="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @include('components.footer')
 
@@ -211,5 +246,11 @@
 
     plate.addEventListener('input', (e) => {
         e.target.value = formatPlate(e.target.value);
+    });
+
+    $(document).ready(function () {
+        $('.btn-import').click(() => {
+            $('#uploadModal').modal('show');
+        });
     });
 </script>

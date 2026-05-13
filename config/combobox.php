@@ -19,6 +19,13 @@
                     ['label' => 'Departemen', 'route' => 'web.department.index', 'permission' => 'department'],
                     ['label' => 'Cabang', 'route' => 'web.branch.index', 'permission' => 'branch'],
                 ]
+            ],
+            [
+                'label'         => 'Management',
+                'icon'          => 'bi-person-check',
+                'children' => [
+                    ['label' => 'Penempatan Kendaraan', 'route' => 'web.vehicle-assignment.index', 'permission' => 'vehicle_assignment'],
+                ]
             ]
         ],
         "sex" => [

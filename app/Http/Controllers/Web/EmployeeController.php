@@ -146,13 +146,13 @@ class EmployeeController extends Controller{
             $employee->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             $company->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             return redirect()->route('web.employee.index')->with('success', 'Employee deleted successfully!');

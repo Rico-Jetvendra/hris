@@ -87,12 +87,12 @@ class Employee extends Model{
         });
 
         static::creating(function ($model) {
-            $model->created_by = auth()->id() ?? 1;
+            $model->created_by = session('user')->id ?? 1;
             $model->created_date = now();
         });
 
         static::updating(function ($model) {
-            $model->updated_by = auth()->id() ?? 1;
+            $model->updated_by = session('user')->id ?? 1;
             $model->updated_date = now();
         });
     }

@@ -2,6 +2,7 @@
     <div class="card-header">
         @php
             $page   = request()->segment(1);
+            $page   = implode('_', explode('-', $page));
             $add    = $page.'.add';
             $edit   = $page.'.edit';
             $delete = $page.'.delete';

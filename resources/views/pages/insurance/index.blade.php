@@ -30,8 +30,8 @@
 <x-crud-modal
     title="Asuransi"
     :fields="[
-        ['name' => 'insurance_name', 'label' => 'Nama Asuransi', 'type' => 'text', 'required' => true],
-        ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
+        ['name' => 'insurance_name', 'id' => 'insurance_name', 'label' => 'Nama Asuransi', 'type' => 'text', 'required' => true],
+        ['name' => 'remarks', 'id' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
     ]"
 />
 

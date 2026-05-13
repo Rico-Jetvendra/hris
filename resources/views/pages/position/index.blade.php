@@ -30,8 +30,8 @@
 <x-crud-modal
     title="Jabatan"
     :fields="[
-        ['name' => 'position_name', 'label' => 'Nama Jabatan', 'type' => 'text', 'required' => true],
-        ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
+        ['name' => 'position_name', 'id' => 'position_name', 'label' => 'Nama Jabatan', 'type' => 'text', 'required' => true],
+        ['name' => 'remarks', 'id' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
     ]"
 />
 

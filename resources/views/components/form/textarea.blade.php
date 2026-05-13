@@ -5,5 +5,6 @@
     id="{{ $field['name'] }}"
     rows="3"
     style="resize:none"
+    placeholder="{{ $field['label'] }}"
     @required($field['required'] ?? false)
 ></textarea>

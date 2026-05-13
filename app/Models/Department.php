@@ -50,5 +50,15 @@ class Department extends Model{
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('t_department.status', 1)->where('t_department.deleted_date', null);
         });
+
+        static::creating(function ($model) {
+            $model->created_by = session('user')->id ?? 1;
+            $model->created_date = now();
+        });
+
+        static::updating(function ($model) {
+            $model->updated_by = session('user')->id ?? 1;
+            $model->updated_date = now();
+        });
     }
 }

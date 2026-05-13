@@ -1,11 +1,11 @@
 
       <footer class="app-footer">
-        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <div class="float-end d-none d-sm-inline">
+            Last Login at : {{ \Carbon\Carbon::parse(session('user')->login_date)->format('D, d F Y H:i:s') }}
+        </div>
         <strong>
-          Copyright &copy; 2014-2026&nbsp;
-          <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
+            Veron Indonesia
         </strong>
-        All rights reserved.
       </footer>
     </div>
 
@@ -17,37 +17,10 @@
     <script src="{{ asset('js/adminlte.js') }}"></script>
     <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="{{ asset('js/crud.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
-
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').each(function () {
-                $(this).datepicker({
-                    uiLibrary: 'bootstrap5',
-                    format: 'yyyy-mm-dd',
-                    placeholder: 'yyyy-mm-dd'
-                });
-            });
-
-            $('.npwp-mask').mask('00.000.000.0.000.000');
-            $('.ktp-mask').mask('0000000000000000');
-            $('.frame-mask').mask('ZZZZZZZZZZZZZZZZZZZZ', {
-                translation:{
-                    'Z': {
-                        pattern: /[A-Za-z0-9]/
-                    }
-                }
-            });
-            $('.machine-mask').mask('ZZZZZZZZZZZZZZZZZZZZ', {
-                translation:{
-                    'Z': {
-                        pattern: /[A-Za-z0-9]/
-                    }
-                }
-            });
-        });
-    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -97,7 +70,7 @@
             }
         }
 
-        @if (session('webpush_initialized') === false)
+        @if (session()->has('webpush_initialized') === false)
             initWebPush();
         @endif
 

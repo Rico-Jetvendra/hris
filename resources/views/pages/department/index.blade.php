@@ -30,8 +30,8 @@
 <x-crud-modal
     title="Departemen"
     :fields="[
-        ['name' => 'department_name', 'label' => 'Nama Departemen', 'type' => 'text', 'required' => true],
-        ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
+        ['name' => 'department_name', 'id' => 'department_name', 'label' => 'Nama Departemen', 'type' => 'text', 'required' => true],
+        ['name' => 'remarks', 'id' => 'remarks', 'label' => 'Remarks', 'type' => 'textarea', 'required' => false],
     ]"
 />
 

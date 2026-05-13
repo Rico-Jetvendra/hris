@@ -22,10 +22,13 @@
                         @if(in_array('employee.add', session('permission', [])))
                             <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
                         @endif
-                        <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button>
+                        @if(in_array('employee.upload', session('permission', [])))
+                            <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button>
+                        @endif
                     </div>
 
                     <div class="card-body">
+                        <input type="hidden" id="defaultSearch" value="{{ request('search') }}">
                         <table id="dataTable" class="table table-responsive table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -89,8 +92,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_sex">Jenis Kelamin</label>
-                                        <select class="form-control" name="employee[employee_sex]" id="employee_sex" required>
-                                            <option value="0">----- Pilih Jenis Kelamin -----</option>
+                                        <select class="form-select searchable-select" name="employee[employee_sex]" id="employee_sex" required>
+                                            <option value="">----- Pilih Jenis Kelamin -----</option>
                                             @foreach($combo['sex'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }}</option>
                                             @endforeach
@@ -98,8 +101,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_blood">Gol. Darah</label>
-                                        <select class="form-control" name="employee[employee_blood]" id="employee_blood" required>
-                                            <option value="0">----- Pilih Golongan Darah -----</option>
+                                        <select class="form-select searchable-select" name="employee[employee_blood]" id="employee_blood" required>
+                                            <option value="">----- Pilih Golongan Darah -----</option>
                                             @foreach($combo['blood'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
                                             @endforeach
@@ -107,8 +110,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_religion">Agama</label>
-                                        <select class="form-control" name="employee[employee_religion]" id="employee_religion" required>
-                                            <option value="0">----- Pilih Agama -----</option>
+                                        <select class="form-select searchable-select" name="employee[employee_religion]" id="employee_religion" required>
+                                            <option value="">----- Pilih Agama -----</option>
                                             @foreach($combo['religion'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
                                             @endforeach
@@ -116,8 +119,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_marriage">Status Pernikahan</label>
-                                        <select class="form-control" name="employee[employee_marriage]" id="employee_marriage" required>
-                                            <option value="0">----- Pilih Status Pernikahan -----</option>
+                                        <select class="form-select searchable-select" name="employee[employee_marriage]" id="employee_marriage" required>
+                                            <option value="">----- Pilih Status Pernikahan -----</option>
                                             @foreach($combo['marriage'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
                                             @endforeach
@@ -135,8 +138,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_education">Pendidikan Terakhir</label>
-                                        <select class="form-control" name="employee[employee_education]" id="employee_education" required>
-                                            <option value="0">----- Pilih Pendidikan Terakhir -----</option>
+                                        <select class="form-select searchable-select" name="employee[employee_education]" id="employee_education" required>
+                                            <option value="">----- Pilih Pendidikan Terakhir -----</option>
                                             @foreach($combo['education'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
                                             @endforeach
@@ -180,8 +183,8 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="mb-3">
                                         <label class="form-label" for="department_id">Departemen</label>
-                                        <select class="form-control" name="company[department_id]" id="department_id" required>
-                                            <option value="0">----- Pilih Departemen -----</option>
+                                        <select class="form-select searchable-select" name="company[department_id]" id="department_id" required>
+                                            <option value="">----- Pilih Departemen -----</option>
                                             @foreach($combo['department'] as $value)
                                                 <option value="{{ $value['department_id'] }}">{{ $value['department_name'] }} </option>
                                             @endforeach
@@ -189,8 +192,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="company_id">Perusahaan</label>
-                                        <select class="form-control" name="company[company_id]" id="company_id" required>
-                                            <option value="0">----- Pilih Perusahaan -----</option>
+                                        <select class="form-select searchable-select" name="company[company_id]" id="company_id" required>
+                                            <option value="">----- Pilih Perusahaan -----</option>
                                             @foreach($combo['company'] as $value)
                                                 <option value="{{ $value['company_id'] }}">{{ $value['company_name'] }} </option>
                                             @endforeach
@@ -204,8 +207,8 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="mb-3">
                                         <label class="form-label" for="position_id">Jabatan</label>
-                                        <select class="form-control" name="company[position_id]" id="position_id" required>
-                                            <option value="0">----- Pilih Jabatan -----</option>
+                                        <select class="form-select searchable-select" name="company[position_id]" id="position_id" required>
+                                            <option value="">----- Pilih Jabatan -----</option>
                                             @foreach($combo['position'] as $value)
                                                 <option value="{{ $value['position_id'] }}">{{ $value['position_name'] }} </option>
                                             @endforeach
@@ -213,8 +216,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="branch_id">Cabang</label>
-                                        <select class="form-control" name="company[branch_id]" id="branch_id" required>
-                                            <option value="0">----- Pilih Cabang -----</option>
+                                        <select class="form-select searchable-select" name="company[branch_id]" id="branch_id" required>
+                                            <option value="">----- Pilih Cabang -----</option>
                                             @foreach($combo['branch'] as $value)
                                                 <option value="{{ $value['branch_id'] }}">{{ $value['branch_name'] }} </option>
                                             @endforeach
@@ -282,7 +285,6 @@
 
 
 @include('components.footer')
-<script src="/js/crud.js"></script>
 <script>
     let columns = @json($columns);
     let permissions = @json(session('permission'));

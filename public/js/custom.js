@@ -23,3 +23,60 @@ function formatPlate(value) {
 
     return result;
 }
+
+$(document).ready(function () {
+    $('.datepicker').each(function () {
+        $(this).datepicker({
+            uiLibrary: 'bootstrap5',
+            format: 'yyyy-mm-dd',
+            placeholder: 'yyyy-mm-dd'
+        });
+    });
+
+    const segment1      = window.location.pathname.split('/').filter(Boolean);
+    if(segment1.length === 0){
+        $.fn.DataTable.ext.pager.numbers_length = 5;
+
+        const table = $('.dataTable').DataTable({
+            responsive:true,
+            autoWidth:false,
+            processing: true,
+        });
+    }
+
+    $('.npwp-mask').mask('00.000.000.0.000.000');
+    $('.ktp-mask').mask('0000000000000000');
+    $('.frame-mask').mask('ZZZZZZZZZZZZZZZZZZZZ', {
+        translation:{
+            'Z': {
+                pattern: /[A-Za-z0-9]/
+            }
+        }
+    });
+    $('.machine-mask').mask('ZZZZZZZZZZZZZZZZZZZZ', {
+        translation:{
+            'Z': {
+                pattern: /[A-Za-z0-9]/
+            }
+        }
+    });
+});
+$('#crudModal').on('shown.bs.modal', function () {
+    document.querySelectorAll('.searchable-select').forEach((el) => {
+
+        const label = document.querySelector(`label[for="${el.id}"]`);
+        const text  = label.innerText.trim().replace('(required)', '');
+
+        if (el.options[0].value === '') {
+            el.options[0].text =
+                `----- Pilih ${text} -----`;
+        }
+
+        if (!el.tomselect) {
+            new TomSelect(el, {
+                create: false
+            });
+        }
+
+    });
+});

@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class Insurance extends Model{
-    protected $table = 't_insurance';
+class VehicleAssignment extends Model{
+    protected $table = 't_vehicle_assignment';
 
-    protected $primaryKey = 'insurance_id';
+    protected $primaryKey = 'vehicle_assignment_id';
 
     public $incrementing = true;
 
@@ -22,7 +22,8 @@ class Insurance extends Model{
     const DELETED_AT = 'deleted_date';
 
     protected $fillable = [
-        'insurance_name',
+        'vehicle_id',
+        'employee_id',
         'remarks',
         'status',
         'created_by',
@@ -32,19 +33,21 @@ class Insurance extends Model{
     ];
 
     protected $casts = [
-        'insurance_id'  => 'integer',
-        'status'       => 'integer',
-        'created_by'   => 'integer',
-        'updated_by'   => 'integer',
-        'deleted_by'   => 'integer',
-        'created_date' => 'datetime',
-        'updated_date' => 'datetime',
-        'deleted_date' => 'datetime',
+        'vehicle_assignment_id' => 'integer',
+        'vehicle_id'            => 'integer',
+        'employee_id'           => 'integer',
+        'status'                => 'integer',
+        'created_by'            => 'integer',
+        'updated_by'            => 'integer',
+        'deleted_by'            => 'integer',
+        'created_date'          => 'datetime',
+        'updated_date'          => 'datetime',
+        'deleted_date'          => 'datetime',
     ];
 
     protected static function booted(){
         static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('t_insurance.status', 1)->where('t_insurance.deleted_date', null);
+            $builder->where('t_vehicle_assignment.status', 1)->where('t_vehicle_assignment.deleted_date', null);
         });
 
         static::creating(function ($model) {

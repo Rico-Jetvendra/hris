@@ -40,10 +40,6 @@ class DepartmentController extends Controller{
 
         $validated = $validator->validated();
 
-        $validated['status'] = '1';
-        $validated['created_by'] = auth()->id() ?? 1;
-        $validated['created_date'] = now();
-
         try {
             Department::create($validated);
 
@@ -110,9 +106,6 @@ class DepartmentController extends Controller{
 
         $validated = $validator->validated();
 
-        $validated['updated_date'] = now();
-        $validated['updated_by'] = auth()->id() ?? 1;
-
         try {
             $data->update($validated);
 
@@ -129,7 +122,7 @@ class DepartmentController extends Controller{
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             return redirect()->route('web.department.index')->with('success', 'Departemen berhasil di hapus!');

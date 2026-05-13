@@ -42,9 +42,6 @@ class CompanyController extends Controller{
         $validated = $validator->validated();
 
         $validated['company_initial'] = $this->companyInitial($validated['company_name']);
-        $validated['status'] = '1';
-        $validated['created_by'] = auth()->id() ?? 1;
-        $validated['created_date'] = now();
 
         try {
             Company::create($validated);
@@ -113,8 +110,6 @@ class CompanyController extends Controller{
         $validated = $validator->validated();
 
         $validated['company_initial'] = $this->companyInitial($validated['company_name']);
-        $validated['updated_date'] = now();
-        $validated['updated_by'] = auth()->id() ?? 1;
 
         try {
             $data->update($validated);
@@ -132,7 +127,7 @@ class CompanyController extends Controller{
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             return redirect()->route('web.company.index')->with('success', 'Company deleted successfully!');

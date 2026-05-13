@@ -1,5 +1,3 @@
-const { xor } = require("lodash");
-
 function initCrud({ routes, fields, columns, permissions }) {
     $.ajaxSetup({
         headers: {
@@ -9,7 +7,8 @@ function initCrud({ routes, fields, columns, permissions }) {
 
     const modal         = $('#crudModal');
     const form          = $('#crudForm');
-    const segment1      = window.location.pathname.split('/').filter(Boolean)[0];
+    const defaultSearch = $('#defaultSearch').val();
+    const segment1      = window.location.pathname.split('/').filter(Boolean)[0].replace(/-/g, "_");
     const tableColumns  = [
         { data: 'DT_RowIndex', orderable: false, searchable: false },
 
@@ -28,6 +27,8 @@ function initCrud({ routes, fields, columns, permissions }) {
         });
     }
 
+    $.fn.DataTable.ext.pager.numbers_length = 5;
+
     // Initialize DataTable
     const table = $('#dataTable').DataTable({
         responsive:true,
@@ -35,7 +36,11 @@ function initCrud({ routes, fields, columns, permissions }) {
         processing: true,
         serverSide: true,
         ajax: routes.data,
-        columns: tableColumns
+        pagingType: "simple_numbers",
+        columns: tableColumns,
+        search: {
+            search: defaultSearch
+        }
     });
 
     // OPEN CREATE
@@ -56,7 +61,6 @@ function initCrud({ routes, fields, columns, permissions }) {
         $('#modalTitle').text('Edit');
 
         $.get(routes.edit(id), res => {
-            console.log("result: ",res);
             for(let key in fields){
                 if(key !== fields[key]){
                     if(fields[key] == 'checkbox'){

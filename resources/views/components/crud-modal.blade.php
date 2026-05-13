@@ -16,7 +16,7 @@
                 <div class="modal-body">
                     @foreach ($fields as $field)
                         <div class="mb-3">
-                            <label class="form-label">{{ $field['label'] }}</label>
+                            <label class="form-label" for="{{ $field['id'] }}">{{ $field['label'] }}</label>
 
                             <x-form.dynamic
                                 :field="$field"

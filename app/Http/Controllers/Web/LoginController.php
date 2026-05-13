@@ -3,16 +3,53 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
-use App\Models\Role;
+use App\Models\Company;
+use App\Models\Employee;
+use App\Models\Insurance;
 use App\Models\User;
+use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller{
     public function index(){
-        return view('index');
+        $employeeCount  = Employee::count();
+        $vehicleCount   = Vehicle::count();
+        $insuranceCount = Insurance::count();
+        $companyCount   = Company::count();
+
+        $count = [
+            "employee"  => $employeeCount,
+            "vehicle"   => $vehicleCount,
+            "insurance" => $insuranceCount,
+            "company"   => $companyCount,
+        ];
+
+        $vehicle = Vehicle::where(function ($query) {
+            $query->whereBetween('vehicle_tax_due', [
+                    Carbon::today(),
+                    Carbon::today()->addWeeks(7)
+                ])
+                ->orWhereBetween('vehicle_reg_due', [
+                    Carbon::today(),
+                    Carbon::today()->addWeeks(7)
+                ]);
+        })->get();
+
+        $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
+                    ->whereBetween('ec.end_of_contract', [
+                    Carbon::today(),
+                    Carbon::today()->addWeeks(7)
+        ])->get();
+
+        $data = [
+            "vehicle" => $vehicle,
+            "employee" => $employee
+        ];
+
+        return view('index', compact('count', 'data'));
     }
 
     public function signin(){
@@ -46,6 +83,7 @@ class LoginController extends Controller{
                             ->pluck('p.name')
                             ->toArray();
 
+        $user->update(['login_date' => Carbon::now()]);
         session(['user' => $user, 'permission' => $permissions]);
 
         // Prevent session fixation
@@ -55,7 +93,7 @@ class LoginController extends Controller{
     }
 
     public function logout(Request $request){
-        $request->session()->flush();
+        $request->session()->forget(['user', 'permission', 'webpush_initialized']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -63,7 +101,7 @@ class LoginController extends Controller{
     }
 
     public function saveWebTokenSession(Request $request){
-        $user = User::where('id', auth()->id())->first();
+        $user = User::where('id', session('user')->id)->first();
         $user->update(['device_token' => $request->token]);
 
         $request->session()->put('webpush_initialized', true);

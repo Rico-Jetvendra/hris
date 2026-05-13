@@ -2,13 +2,13 @@
 
 namespace App\Imports;
 
-use App\Models\Company;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\EmployeeCompany;
 
@@ -230,7 +230,7 @@ class EmployeeImport implements ToCollection, WithCalculatedFormulas{
             $fieldName      => $name,
             'remarks'       => 'Import from excel',
             'status'        => '1',
-            'created_by'    => auth()->id() ?? 1,
+            'created_by'    => session('user')->id ?? 1,
             'created_date'  => now(),
         ];
 

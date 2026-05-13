@@ -40,10 +40,6 @@ class InsuranceController extends Controller{
 
         $validated = $validator->validated();
 
-        $validated['status'] = '1';
-        $validated['created_by'] = auth()->id() ?? 1;
-        $validated['created_date'] = now();
-
         try {
             Insurance::create($validated);
 
@@ -110,9 +106,6 @@ class InsuranceController extends Controller{
 
         $validated = $validator->validated();
 
-        $validated['updated_date'] = now();
-        $validated['updated_by'] = auth()->id() ?? 1;
-
         try {
             $data->update($validated);
 
@@ -129,7 +122,7 @@ class InsuranceController extends Controller{
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             return redirect()->route('web.insurance.index')->with('success', 'Asuransi berhasil dihapus!');

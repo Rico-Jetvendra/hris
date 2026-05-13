@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
+use App\Imports\VehicleImport;
 use App\Models\Company;
 use App\Models\Insurance;
 use App\Models\Vehicle;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class VehicleController extends Controller{
@@ -35,7 +38,7 @@ class VehicleController extends Controller{
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
-        $validated['vehicle_insurance_period']  = $validated['vehicle_insurance_period_start'].' s/d '.$validated['vehicle_insurance_period_end'];
+        $validated['vehicle_insurance_period']  = $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'];
 
         try {
             Vehicle::create($validated);
@@ -62,6 +65,9 @@ class VehicleController extends Controller{
             })
             ->addColumn('vehicle_insurance_period', function($row){
                 return $row->vehicle_insurance_start.' s/d '.$row->vehicle_insurance_end;
+            })
+            ->addColumn('company_name', function($row){
+                return $row->company_name ?? '-';
             })
             ->addColumn('action', function ($row) {
                 $buttons = '';
@@ -116,12 +122,34 @@ class VehicleController extends Controller{
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
-                'deleted_by'    => auth()->id() ?? 1
+                'deleted_by'    => session('user')->id ?? 1
             ]);
 
             return redirect()->route('web.vehicle.index')->with('success', 'Vehicle deleted successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
+        }
+    }
+
+    public function upload(Request $request){
+        $validator = Validator::make($request->all(), [
+            'file'      => 'file|mimes:xls,xlsx',
+        ],[
+            'file.required' => 'File wajib diupload.',
+            'file.file'     => 'File tidak valid.',
+            'file.mimes'    => 'File harus berupa Excel (.xls atau .xlsx).',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        try{
+            Excel::import(new VehicleImport, $request->file('file'), null, \Maatwebsite\Excel\Excel::XLSX);
+
+            return redirect()->route('web.employee.index')->with('success', 'Karyawan berhasil diupload!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal melakukan import : ' . $e->getMessage());
         }
     }
 
