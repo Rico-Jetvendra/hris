@@ -46,7 +46,7 @@
             try {
                 const permission = await Notification.requestPermission();
                 const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js', {
-                    scope: '/taking-order/public/'
+                    scope: '/hris/'
                 });
 
                 if (permission !== "granted") {
