@@ -8,7 +8,7 @@ function initCrud({ routes, fields, columns, permissions }) {
     const modal         = $('#crudModal');
     const form          = $('#crudForm');
     const defaultSearch = $('#defaultSearch').val();
-    const segment1      = window.location.pathname.split('/').filter(Boolean)[0].replace(/-/g, "_");
+    const segment1      = window.location.pathname.split('/').filter(Boolean)[-1].replace(/-/g, "_");
     console.log("SEGMENT: ", segment1);
     const tableColumns  = [
         { data: 'DT_RowIndex', orderable: false, searchable: false },
