@@ -124,7 +124,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_insurance">Asuransi</label>
-                                <select class="form-control searchable-select" name="vehicle_insurance" id="vehicle_insurance" required>
+                                <select class="form-control searchable-select" name="vehicle_insurance" id="vehicle_insurance">
                                     <option value="">----- Pilih Asuransi -----</option>
                                     @foreach($combo['insurance'] as $value)
                                         <option value="{{ $value['insurance_id'] }}">{{ $value['insurance_name'] }}</option>
