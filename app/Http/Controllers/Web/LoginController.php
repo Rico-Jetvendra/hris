@@ -27,22 +27,24 @@ class LoginController extends Controller{
             "company"   => $companyCount,
         ];
 
-        $vehicle = Vehicle::where(function ($query) {
-            $query->whereBetween('vehicle_tax_due', [
-                    Carbon::today(),
-                    Carbon::today()->addWeeks(1)
-                ])
-                ->orWhereBetween('vehicle_reg_due', [
-                    Carbon::today(),
-                    Carbon::today()->addWeeks(1)
-                ]);
+        $today = Carbon::today();
+        $nextWeek = Carbon::today()->addWeek();
+
+        $vehicle = Vehicle::where(function ($query) use ($today, $nextWeek) {
+            $query->where(function ($q) use ($today, $nextWeek) {
+                $q->whereBetween('vehicle_tax_due', [$today, $nextWeek])
+                ->orWhereDate('vehicle_tax_due', '<', $today);
+            })
+
+            ->orWhere(function ($q) use ($today, $nextWeek) {
+                $q->whereBetween('vehicle_reg_due', [$today, $nextWeek])
+                ->orWhereDate('vehicle_reg_due', '<', $today);
+            });
         })->get();
 
         $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
-                    ->whereBetween('ec.end_of_contract', [
-                    Carbon::today(),
-                    Carbon::today()->addWeeks(1)
-        ])->get();
+                    ->whereBetween('ec.end_of_contract', [$today,$nextWeek])
+                    ->orWhereDate('ec.end_of_contract', '<', $today)->get();
 
         $data = [
             "vehicle" => $vehicle,
