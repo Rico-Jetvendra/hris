@@ -116,11 +116,11 @@
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_tax_due">Tgl. Berlaku Pajak</label>
-                                <input class="form-control datepicker" type="text" name="vehicle_tax_due" id="vehicle_tax_due" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker" type="text" name="vehicle_tax_due" id="vehicle_tax_due" placeholder="yyyy/mm/dd" autocomplete="off"/>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_reg_due">Tgl. Berlaku STNK</label>
-                                <input class="form-control datepicker" type="text" name="vehicle_reg_due" id="vehicle_reg_due" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker" type="text" name="vehicle_reg_due" id="vehicle_reg_due" placeholder="yyyy/mm/dd" autocomplete="off"/>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_insurance">Asuransi</label>
@@ -138,15 +138,15 @@
                             <div class="row">
                                 <label class="form-label" for="vehicle_insurance_start">Periode Asuransi</label>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <input class="form-control datepicker" type="text" name="vehicle_insurance_start" id="vehicle_insurance_start" placeholder="Dari"/>
+                                    <input class="form-control datepicker" type="text" name="vehicle_insurance_start" id="vehicle_insurance_start" placeholder="Dari" autocomplete="off"/>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <input class="form-control datepicker" type="text" name="vehicle_insurance_end" id="vehicle_insurance_end" placeholder="Sampai" />
+                                    <input class="form-control datepicker" type="text" name="vehicle_insurance_end" id="vehicle_insurance_end" placeholder="Sampai" autocomplete="off"/>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="vehicle_insurance_payment">Tgl. Pembayaran Asuransi</label>
-                                <input class="form-control datepicker" type="text" name="vehicle_insurance_payment" id="vehicle_insurance_payment" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker" type="text" name="vehicle_insurance_payment" id="vehicle_insurance_payment" placeholder="yyyy/mm/dd" autocomplete="off"/>
                             </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12">
