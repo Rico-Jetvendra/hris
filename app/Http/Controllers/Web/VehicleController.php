@@ -8,6 +8,7 @@ use App\Imports\VehicleImport;
 use App\Models\Company;
 use App\Models\Insurance;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -69,6 +70,12 @@ class VehicleController extends Controller{
             })
             ->addColumn('company_name', function($row){
                 return $row->company_name ?? '-';
+            })
+            ->addColumn('vehicle_tax_due', function($row){
+                return Carbon::parse($row->vehicle_tax_due)->format('d F Y') ?? '-';
+            })
+            ->addColumn('vehicle_reg_due', function($row){
+                return Carbon::parse($row->vehicle_reg_due)->format('d F Y') ?? '-';
             })
             ->addColumn('action', function ($row) {
                 $buttons = '';
