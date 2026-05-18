@@ -109,6 +109,14 @@ class VehicleController extends Controller{
 
                 $query->whereIn('vehicle_brand', $matchedIds);
             })
+            ->filterColumn('company_name', function($query, $keyword){
+                $query->whereExists(function($sub) use ($keyword){
+                    $sub->select(DB::raw(1))
+                        ->from('t_company')
+                        ->whereColumn('t_company.company_id', 't_vehicle.vehicle_company')
+                        ->where('t_company.company_name', 'like', "%{$keyword}%");
+                });
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -195,7 +203,7 @@ class VehicleController extends Controller{
                     't_vehicle.remarks',
                     DB::raw('SUBSTRING_INDEX(t_vehicle.vehicle_insurance_period, "s/d", 1) as vehicle_insurance_start'),
                     DB::raw('SUBSTRING_INDEX(t_vehicle.vehicle_insurance_period, "s/d", -1) as vehicle_insurance_end'),
-                    'cp.company_id',
+                    'cp.company_id as company_id',
                     'cp.company_name as company_name',
                 );
 
