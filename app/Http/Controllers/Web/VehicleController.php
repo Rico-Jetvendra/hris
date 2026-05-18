@@ -38,7 +38,7 @@ class VehicleController extends Controller{
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
-        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_period_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
+        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
 
         try {
             Vehicle::create($validated);
@@ -64,7 +64,8 @@ class VehicleController extends Controller{
                 return collect($brands)->firstWhere('id', $row->vehicle_brand)['name'];
             })
             ->addColumn('vehicle_insurance_period', function($row){
-                return $row->vehicle_insurance_start.' s/d '.$row->vehicle_insurance_end;
+                $tgl = !empty($row->vehicle_insurance_start) ? $row->vehicle_insurance_start.' s/d '.$row->vehicle_insurance_end : null;
+                return $tgl ?? '-';
             })
             ->addColumn('company_name', function($row){
                 return $row->company_name ?? '-';
@@ -102,7 +103,7 @@ class VehicleController extends Controller{
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
-        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_period_start']) ? $validated['vehicle_insurance_period_start'].' s/d '.$validated['vehicle_insurance_period_end'] : null;
+        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
 
         try {
             $data = Vehicle::findOrFail($id);
