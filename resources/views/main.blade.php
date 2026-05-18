@@ -109,18 +109,14 @@
                                     <tbody>
                                         @forelse ($data['vehicle'] as $index => $vehicle)
                                             @php
-                                                $taxDue = \Carbon\Carbon::parse($vehicle->vehicle_tax_due);
-                                                $regDue = \Carbon\Carbon::parse($vehicle->vehicle_reg_due);
+                                                $today      = \Carbon\Carbon::today();
+                                                $nextWeek   = \Carbon\Carbon::today()->addDays(7);
+                                                $taxDue     = \Carbon\Carbon::parse($vehicle->vehicle_tax_due);
+                                                $regDue     = \Carbon\Carbon::parse($vehicle->vehicle_reg_due);
 
-                                                $isTaxDanger = $taxDue->between(
-                                                    \Carbon\Carbon::today(),
-                                                    \Carbon\Carbon::today()->addDays(7)
-                                                );
+                                                $isTaxDanger = $taxDue->isPast() || $taxDue->between($today, $nextWeek);
 
-                                                $isRegDanger = $regDue->between(
-                                                    \Carbon\Carbon::today(),
-                                                    \Carbon\Carbon::today()->addDays(7)
-                                                );
+                                                $isRegDanger = $regDue->isPast() || $regDue->between($today, $nextWeek);
                                             @endphp
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>

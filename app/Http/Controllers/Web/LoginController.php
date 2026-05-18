@@ -43,8 +43,7 @@ class LoginController extends Controller{
         })->get();
 
         $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
-                    ->whereBetween('ec.end_of_contract', [$today,$nextWeek])
-                    ->orWhereDate('ec.end_of_contract', '<', $today)->get();
+                    ->whereBetween('ec.end_of_contract', [$today,$nextWeek])->get();
 
         $data = [
             "vehicle" => $vehicle,
