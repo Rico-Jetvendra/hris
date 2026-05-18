@@ -13,6 +13,7 @@ use App\Models\Position;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Imports\EmployeeImport;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
@@ -68,6 +69,9 @@ class EmployeeController extends Controller{
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->editColumn('entry_date', function($row){
+                return Carbon::parse($row->entry_date)->format('d F Y');
+            })
             ->addColumn('action', function ($row) {
                 $buttons = '';
 
@@ -87,27 +91,33 @@ class EmployeeController extends Controller{
 
                 return $buttons;
             })
-            ->filterColumn('position_name', function($query, $keyword) {
-                $query->where('p.position_name', 'like', "%{$keyword}%");
-            })
-            ->filterColumn('department_name', function($query, $keyword) {
-                $query->where('d.department_name', 'like', "%{$keyword}%");
-            })
-            ->filterColumn('employee_nik', function($query, $keyword) {
-                $query->where('ec.employee_nik', 'like', "%{$keyword}%");
-            })
-            ->filterColumn('contract_status', function($query, $keyword) {
-                $keyword = strtolower($keyword);
+            ->filter(function ($query) {
+                $search = request('search')['value'] ?? null;
 
-                $query->where(function($q) use ($keyword) {
-                    if (strpos('karyawan', $keyword) !== false) {
-                        $q->where('ec.contract_status', 1);
-                    }
+                if ($search) {
+                    $query->where(function($q) use ($search) {
+                        $q->whereRaw(
+                            "DATE_FORMAT(ec.entry_date, '%d %M %Y') LIKE ?",
+                            ["%{$search}%"]
+                        )
 
-                    if (strpos('resign', $keyword) !== false) {
-                        $q->orWhere('ec.contract_status', 0);
-                    }
-                });
+                        ->orWhere('t_employee.employee_name', 'like', "%{$search}%")
+                        ->orWhere('t_employee.employee_email', 'like', "%{$search}%")
+                        ->orWhere('t_employee.employee_phone', 'like', "%{$search}%")
+                        ->orWhere('ec.employee_nik', 'like', "%{$search}%")
+                        ->orWhere('p.position_name', 'like', "%{$search}%")
+                        ->orWhere('d.department_name', 'like', "%{$search}%");
+
+                        // contract_status
+                        if (strpos(strtolower('karyawan'), strtolower($search)) !== false) {
+                            $q->orWhere('ec.contract_status', 1);
+                        }
+
+                        if (strpos(strtolower('resign'), strtolower($search)) !== false) {
+                            $q->orWhere('ec.contract_status', 0);
+                        }
+                    });
+                }
             })
             ->rawColumns(['action'])
             ->make(true);
