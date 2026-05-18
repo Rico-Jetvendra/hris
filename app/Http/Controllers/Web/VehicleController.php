@@ -38,7 +38,7 @@ class VehicleController extends Controller{
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
-        $validated['vehicle_insurance_period']  = $validated['vehicle_insurance_start'] ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
+        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_period_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
 
         try {
             Vehicle::create($validated);
@@ -102,7 +102,7 @@ class VehicleController extends Controller{
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
-        $validated['vehicle_insurance_period']  = $validated['vehicle_insurance_start'] ? $validated['vehicle_insurance_period_start'].' s/d '.$validated['vehicle_insurance_period_end'] : null;
+        $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_period_start']) ? $validated['vehicle_insurance_period_start'].' s/d '.$validated['vehicle_insurance_period_end'] : null;
 
         try {
             $data = Vehicle::findOrFail($id);
