@@ -33,7 +33,7 @@ $(document).ready(function () {
         });
     });
 
-    const segment1      = window.location.pathname.split('/').filter(Boolean);
+    const segment1      = window.location.pathname.split('/').filter(Boolean).at(-1).replace(/-/g, "_");
     if(segment1.length === 0){
         $.fn.DataTable.ext.pager.numbers_length = 5;
 
