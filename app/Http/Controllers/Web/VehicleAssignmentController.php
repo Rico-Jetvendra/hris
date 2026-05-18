@@ -81,6 +81,12 @@ class VehicleAssignmentController extends Controller{
 
                 return $buttons;
             })
+            ->filterColumn('vehicle_number', function($query, $keyword) {
+                $query->where('vh.vehicle_number', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('employee_name', function($query, $keyword) {
+                $query->where('em.employee_name', 'like', "%{$keyword}%");
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
