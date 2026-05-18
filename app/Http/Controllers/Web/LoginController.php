@@ -30,18 +30,18 @@ class LoginController extends Controller{
         $vehicle = Vehicle::where(function ($query) {
             $query->whereBetween('vehicle_tax_due', [
                     Carbon::today(),
-                    Carbon::today()->addWeeks(7)
+                    Carbon::today()->addWeeks(1)
                 ])
                 ->orWhereBetween('vehicle_reg_due', [
                     Carbon::today(),
-                    Carbon::today()->addWeeks(7)
+                    Carbon::today()->addWeeks(1)
                 ]);
         })->get();
 
         $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
                     ->whereBetween('ec.end_of_contract', [
                     Carbon::today(),
-                    Carbon::today()->addWeeks(7)
+                    Carbon::today()->addWeeks(1)
         ])->get();
 
         $data = [
