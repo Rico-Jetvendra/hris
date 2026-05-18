@@ -125,9 +125,6 @@
                                                 <td class="{{ $isRegDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($vehicle->vehicle_reg_due)->format('d M Y') }}</td>
                                             </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center">Tidak ada kendaraan yang jatuh tempo.</td>
-                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -166,9 +163,6 @@
                                                 <td class="{{ $isContractDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($employee->end_of_contract)->format('d M Y') }}</td>
                                             </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center">Tidak ada karyawan yang habis kontrak.</td>
-                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
