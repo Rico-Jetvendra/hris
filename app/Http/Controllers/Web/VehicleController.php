@@ -18,6 +18,7 @@ use Yajra\DataTables\Facades\DataTables;
 class VehicleController extends Controller{
     public function index(){
         $data = $this->getSql()->get();
+
         $columns = [
             ['label' => 'Perusahaan', 'field' => 'company_name'],
             ['label' => 'No. Polisi', 'field' => 'vehicle_number'],
@@ -95,6 +96,18 @@ class VehicleController extends Controller{
                 }
 
                 return $buttons;
+            })
+            ->filterColumn('vehicle_brand', function($query, $keyword) {
+                $brands = collect(config('combobox.brands'));
+
+                $matchedIds = $brands
+                    ->filter(function ($brand) use ($keyword) {
+                        return stripos($brand['name'], $keyword) !== false;
+                    })
+                    ->pluck('id')
+                    ->toArray();
+
+                $query->whereIn('vehicle_brand', $matchedIds);
             })
             ->rawColumns(['action'])
             ->make(true);
