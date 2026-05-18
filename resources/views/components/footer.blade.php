@@ -45,9 +45,9 @@
         async function initWebPush() {
             try {
                 const permission = await Notification.requestPermission();
-                const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js', {
-                    scope: '/hris/'
-                });
+                const registration = await navigator.serviceWorker.register(
+                    '/hris/public/firebase-messaging-sw.js'
+                );
 
                 if (permission !== "granted") {
                     console.log("Notification permission denied");
