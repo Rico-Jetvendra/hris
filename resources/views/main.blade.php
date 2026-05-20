@@ -135,44 +135,6 @@
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
-                            <h5 class="card-title"><b>Karyawan Habis Kontrak</b></h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-responsive table-bordered table-hover dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Nama Karyawan</th>
-                                            <th>Tgl. Habis Kontrak</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($data['employee'] as $index => $employee)
-                                            @php
-                                                $contractDue = \Carbon\Carbon::parse($employee->end_of_contract);
-
-                                                $isContractDanger = $contractDue->between(
-                                                    \Carbon\Carbon::today(),
-                                                    \Carbon\Carbon::today()->addDays(7)
-                                                );
-                                            @endphp
-                                            <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td><a href="{{ route('web.employee.index', ['search' => $employee->employee_name]) }}" target="_blank">{{ $employee->employee_name }}</a></td>
-                                                <td class="{{ $isContractDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($employee->end_of_contract)->format('d M Y') }}</td>
-                                            </tr>
-                                        @empty
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-12">
-                    <div class="card mb-3">
-                        <div class="card-header">
                             <h5 class="card-title"><b>Karyawan Ultah Bulan Ini</b></h5>
                         </div>
                         <div class="card-body">
@@ -216,6 +178,44 @@
                                                 ">
                                                     {{ $birthday->format('d M Y') }}
                                                 </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="card-title"><b>Karyawan Habis Kontrak</b></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-responsive table-bordered table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Nama Karyawan</th>
+                                            <th>Tgl. Habis Kontrak</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($data['employee'] as $index => $employee)
+                                            @php
+                                                $contractDue = \Carbon\Carbon::parse($employee->end_of_contract);
+
+                                                $isContractDanger = $contractDue->between(
+                                                    \Carbon\Carbon::today(),
+                                                    \Carbon\Carbon::today()->addDays(7)
+                                                );
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td><a href="{{ route('web.employee.index', ['search' => $employee->employee_name]) }}" target="_blank">{{ $employee->employee_name }}</a></td>
+                                                <td class="{{ $isContractDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($employee->end_of_contract)->format('d M Y') }}</td>
                                             </tr>
                                         @empty
                                         @endforelse
