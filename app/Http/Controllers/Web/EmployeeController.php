@@ -27,7 +27,7 @@ class EmployeeController extends Controller{
             ['label' => 'Nama Karyawan', 'field' => 'employee_name'],
             ['label' => 'Jabatan', 'field' => 'position_name'],
             ['label' => 'Tgl. Masuk', 'field' => 'entry_date', 'searchable' => false],
-            ['label' => 'Email', 'field' => 'employee_email'],
+            ['label' => 'Cabang', 'field' => 'branch_name'],
             ['label' => 'Telpon', 'field' => 'employee_phone'],
             ['label' => 'Status', 'field' => 'contract_status'],
         ];
@@ -106,10 +106,11 @@ class EmployeeController extends Controller{
                         ->orWhere('t_employee.employee_phone', 'like', "%{$search}%")
                         ->orWhere('ec.employee_nik', 'like', "%{$search}%")
                         ->orWhere('p.position_name', 'like', "%{$search}%")
-                        ->orWhere('d.department_name', 'like', "%{$search}%");
+                        ->orWhere('d.department_name', 'like', "%{$search}%")
+                        ->orWhere('b.branch_name', 'like', "%{$search}%");
 
                         // contract_status
-                        if (strpos(strtolower('karyawan'), strtolower($search)) !== false) {
+                        if (strpos(strtolower('aktif'), strtolower($search)) !== false) {
                             $q->orWhere('ec.contract_status', 1);
                         }
 
@@ -227,7 +228,7 @@ class EmployeeController extends Controller{
                             'd.department_id',
                             'd.department_name as department_name',
                             'b.branch_id',
-                            'b.branch_name as .branch_name',
+                            'b.branch_name as branch_name',
                             'c.company_id',
                             'c.company_name as company_name',
                             'ec.entry_date as entry_date',
@@ -236,7 +237,7 @@ class EmployeeController extends Controller{
                             DB::raw(
                                 '
                                     CASE
-                                        WHEN ec.contract_status = 1 THEN "Karyawan"
+                                        WHEN ec.contract_status = 1 THEN "Aktif"
                                         ELSE "Resign"
                                     END
                                 as contract_status'

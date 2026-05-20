@@ -45,9 +45,15 @@ class LoginController extends Controller{
         $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
                     ->whereBetween('ec.end_of_contract', [$today,$nextWeek])->get();
 
+        $hbd = Employee::whereMonth('employee_dob', now()->month)
+                        ->whereDay('employee_dob', '>=', now()->day)
+                        ->orderByRaw('DAY(employee_dob) ASC')
+                        ->get();
+
         $data = [
             "vehicle" => $vehicle,
-            "employee" => $employee
+            "employee" => $employee,
+            "hbd" => $hbd
         ];
 
         return view('index', compact('count', 'data'));

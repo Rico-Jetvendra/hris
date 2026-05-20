@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-4 col-md-4 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h5 class="card-title"><b>Kendaraan Jatuh Tempo</b></h5>
@@ -132,7 +132,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-4 col-md-4 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h5 class="card-title"><b>Karyawan Habis Kontrak</b></h5>
@@ -144,7 +144,7 @@
                                         <tr>
                                             <th>No.</th>
                                             <th>Nama Karyawan</th>
-                                            <th>Tanggal Habis Kontrak</th>
+                                            <th>Tgl. Habis Kontrak</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -161,6 +161,59 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td><a href="{{ route('web.employee.index', ['search' => $employee->employee_name]) }}" target="_blank">{{ $employee->employee_name }}</a></td>
                                                 <td class="{{ $isContractDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($employee->end_of_contract)->format('d M Y') }}</td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="card-title"><b>Karyawan Ultah Bulan Ini</b></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-responsive table-bordered table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Nama Karyawan</th>
+                                            <th>Tgl. Ultah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($data['hbd'] as $index => $h)
+                                            @php
+                                                $birthday       = \Carbon\Carbon::parse($h->employee_dob);
+                                                $nextBirthday   = $birthday->copy()->year(now()->year);
+
+                                                $isBirthdayToday = $nextBirthday->isToday();
+
+                                                $isHbdDanger = !$isBirthdayToday && $nextBirthday->between(
+                                                    now(),
+                                                    now()->copy()->addDays(3)
+                                                );
+                                            @endphp
+
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+
+                                                <td>
+                                                    <a href="{{ route('web.employee.index', ['search' => $h->employee_name]) }}" target="_blank">
+                                                        {{ $h->employee_name }}
+                                                    </a>
+                                                </td>
+
+                                                <td class="
+                                                    {{ $isBirthdayToday ? 'text-primary fw-bold' : '' }}
+                                                    {{ $isHbdDanger ? 'text-warning fw-bold' : '' }}
+                                                ">
+                                                    {{ $birthday->format('d M Y') }}
+                                                </td>
                                             </tr>
                                         @empty
                                         @endforelse
