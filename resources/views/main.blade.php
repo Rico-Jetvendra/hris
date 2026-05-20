@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h5 class="card-title"><b>Kendaraan Jatuh Tempo</b></h5>
@@ -132,7 +132,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h5 class="card-title"><b>Karyawan Habis Kontrak</b></h5>
@@ -170,7 +170,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h5 class="card-title"><b>Karyawan Ultah Bulan Ini</b></h5>
