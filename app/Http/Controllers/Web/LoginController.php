@@ -47,6 +47,7 @@ class LoginController extends Controller{
 
         $hbd = Employee::whereMonth('employee_dob', now()->month)
                         ->whereDay('employee_dob', '>=', now()->day)
+                        ->selectRaw('*, TIMESTAMPDIFF(YEAR, employee_dob, CURDATE()) as age')
                         ->orderByRaw('DAY(employee_dob) ASC')
                         ->get();
 

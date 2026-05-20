@@ -182,6 +182,7 @@
                                         <tr>
                                             <th>No.</th>
                                             <th>Nama Karyawan</th>
+                                            <th>Umur</th>
                                             <th>Tgl. Ultah</th>
                                         </tr>
                                     </thead>
@@ -207,6 +208,7 @@
                                                         {{ $h->employee_name }}
                                                     </a>
                                                 </td>
+                                                <td>{{ $h->age }}</td>
 
                                                 <td class="
                                                     {{ $isBirthdayToday ? 'text-primary fw-bold' : '' }}
