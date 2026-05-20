@@ -43,7 +43,9 @@ class LoginController extends Controller{
         })->get();
 
         $employee = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
-                    ->whereBetween('ec.end_of_contract', [$today,$nextWeek])->get();
+                            ->whereMonth('ec.end_of_contract', now()->month)
+                            ->whereYear('ec.end_of_contract', now()->year)
+                            ->get();
 
         $hbd = Employee::join('t_employee_company as ec', 'ec.employee_id', '=', 't_employee.employee_id')
                         ->whereMonth('employee_dob', now()->month)
