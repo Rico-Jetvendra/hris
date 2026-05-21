@@ -138,7 +138,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_education">Pendidikan Terakhir</label>
-                                        <select class="form-select searchable-select" name="employee[employee_education]" id="employee_education" required>
+                                        <select class="form-select searchable-select" name="employee[employee_education]" id="employee_education">
                                             <option value="">----- Pilih Pendidikan Terakhir -----</option>
                                             @foreach($combo['education'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
@@ -147,15 +147,15 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_father">Nama Ayah</label>
-                                        <input class="form-control text-uppercase" type="text" name="employee[employee_father]" id="employee_father" required/>
+                                        <input class="form-control text-uppercase" type="text" name="employee[employee_father]" id="employee_father"/>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_mother">Nama Ibu</label>
-                                        <input class="form-control text-uppercase" type="text" name="employee[employee_mother]" id="employee_mother" required/>
+                                        <input class="form-control text-uppercase" type="text" name="employee[employee_mother]" id="employee_mother"/>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_email">Email</label>
-                                        <input class="form-control" type="email" name="employee[employee_email]" id="employee_email"/>
+                                        <input class="form-control" type="text" name="employee[employee_email]" id="employee_email"/>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_home_phone">Telepon Rumah</label>
