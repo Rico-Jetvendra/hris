@@ -51,6 +51,8 @@ class EmployeeController extends Controller{
 
                 $validated['company']['employee_nik'] = $this->createNIK($initial['company_initial']);
                 $validated['company']['employee_id'] = $employee->employee_id;
+                $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
+
                 EmployeeCompany::create($validated['company']);
             });
 
