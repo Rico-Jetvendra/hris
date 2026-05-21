@@ -143,6 +143,7 @@ class EmployeeController extends Controller{
             DB::transaction(function () use ($employee, $company, $validated) {
                 $employee->update($validated['employee']);
 
+                $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
                 $company->update($validated['company']);
             });
 
