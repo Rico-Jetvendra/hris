@@ -101,7 +101,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_blood">Gol. Darah</label>
-                                        <select class="form-select searchable-select" name="employee[employee_blood]" id="employee_blood" required>
+                                        <select class="form-select searchable-select" name="employee[employee_blood]" id="employee_blood" >
                                             <option value="">----- Pilih Golongan Darah -----</option>
                                             @foreach($combo['blood'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
@@ -110,7 +110,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_religion">Agama</label>
-                                        <select class="form-select searchable-select" name="employee[employee_religion]" id="employee_religion" required>
+                                        <select class="form-select searchable-select" name="employee[employee_religion]" id="employee_religion">
                                             <option value="">----- Pilih Agama -----</option>
                                             @foreach($combo['religion'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
@@ -119,7 +119,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_marriage">Status Pernikahan</label>
-                                        <select class="form-select searchable-select" name="employee[employee_marriage]" id="employee_marriage" required>
+                                        <select class="form-select searchable-select" name="employee[employee_marriage]" id="employee_marriage">
                                             <option value="">----- Pilih Status Pernikahan -----</option>
                                             @foreach($combo['marriage'] as $value)
                                                 <option value="{{ $value['id'] }}">{{ $value['name'] }} </option>
