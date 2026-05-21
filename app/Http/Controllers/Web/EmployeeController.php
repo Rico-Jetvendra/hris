@@ -54,6 +54,7 @@ class EmployeeController extends Controller{
                 $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
 
                 EmployeeCompany::create($validated['company']);
+
             });
 
             return redirect()->route('web.employee.index')->with('success', 'Karyawan berhasil ditambah!');
