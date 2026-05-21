@@ -128,7 +128,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="employee_ktp">KTP</label>
-                                        <input class="form-control ktp-mask" type="text" name="employee[employee_ktp]" id="employee_ktp" required/>
+                                        <input class="form-control ktp-mask" type="text" name="employee[employee_ktp]" id="employee_ktp" />
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
