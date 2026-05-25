@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -45,10 +47,17 @@ class VehicleAssignmentController extends Controller{
         $validated['created_date'] = now();
 
         try {
-            VehicleAssignment::create($validated);
+            $id = VehicleAssignment::create($validated);
+
+            ActivityLogger::create([
+                'subject_type'  => 'Vehicle Assignment',
+                'subject_id'    => $id->vehicle_assignment_id,
+                'new_values'    => $validated
+            ]);
 
             return redirect()->route('web.vehicle-assignment.index')->with('success', 'Penempatan Kendaraan berhasil ditambah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to create vehicle_assignment: ' . $e->getMessage());
         }
     }
@@ -116,10 +125,28 @@ class VehicleAssignmentController extends Controller{
         $validated['updated_by'] = session('user')->id ?? 1;
 
         try {
+            $oldValues = [];
+            $newValues = [];
+
+            foreach ($validated as $field => $value) {
+                if ($data->$field != $value) {
+                    $oldValues[$field] = $data->$field;
+                    $newValues[$field] = $value;
+                }
+            }
+
             $data->update($validated);
+
+            ActivityLogger::update([
+                'subject_type'  => 'Vehicle Assignment',
+                'subject_id'    => $id,
+                'new_values'    => $newValues,
+                'old_values'    => $oldValues,
+            ]);
 
             return redirect()->route('web.vehicle-assignment.index')->with('success', 'Penempatan Kendaraan berhasil di rubah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to update vehicle_assignment: ' . $e->getMessage());
         }
     }
@@ -128,14 +155,23 @@ class VehicleAssignmentController extends Controller{
         $data = $this->getSqlQuery()->where('t_vehicle_assignment.vehicle_assignment_id', $id)->firstOrFail();
 
         try {
+            $oldValues = $data->toArray();
+
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            ActivityLogger::delete([
+                'subject_type'  => 'Vehicle Assignment',
+                'subject_id'    => $id,
+                'old_values'    => $oldValues
+            ]);
+
             return redirect()->route('web.vehicle-assignment.index')->with('success', 'Penempatan Kendaraan berhasil di hapus!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete vehicle_assignment: ' . $e->getMessage());
         }
     }
