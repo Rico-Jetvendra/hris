@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Position;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -45,10 +47,17 @@ class PositionController extends Controller{
         $validated['created_date'] = now();
 
         try {
-            Position::create($validated);
+            $id = Position::create($validated);
+
+            ActivityLogger::create([
+                'subject_type'  => 'Position',
+                'subject_id'    => $id->position_id,
+                'new_values'    => $validated
+            ]);
 
             return redirect()->route('web.position.index')->with('success', 'Jabatan berhasil ditambah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to create position: ' . $e->getMessage());
         }
     }
@@ -59,20 +68,21 @@ class PositionController extends Controller{
 
     public function data(){
         $query = Position::all();
+        $basePermission = permission();
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
-                if(in_array('position.edit', session('permission', []))){
+                if(in_array($basePermission.'.edit', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->position_id.'">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
 
-                if(in_array('position.delete', session('permission', []))){
+                if(in_array($basePermission.'.delete', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->position_id.'" data-name="'.$row->position_name.'">
                         <i class="bi bi-trash"></i>
@@ -114,10 +124,28 @@ class PositionController extends Controller{
         $validated['updated_by'] = session('user')->id ?? 1;
 
         try {
+            $oldValues = [];
+            $newValues = [];
+
+            foreach ($validated as $field => $value) {
+                if ($data->$field != $value) {
+                    $oldValues[$field] = $data->$field;
+                    $newValues[$field] = $value;
+                }
+            }
+
             $data->update($validated);
+
+            ActivityLogger::update([
+                'subject_type'  => 'Position',
+                'subject_id'    => $id,
+                'new_values'    => $newValues,
+                'old_values'    => $oldValues,
+            ]);
 
             return redirect()->route('web.position.index')->with('success', 'Jabatan berhasil dirubah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to update position: ' . $e->getMessage());
         }
     }
@@ -126,14 +154,23 @@ class PositionController extends Controller{
         $data = Position::findOrFail($id);
 
         try {
+            $oldValues = $data->toArray();
+
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            ActivityLogger::delete([
+                'subject_type'  => 'Position',
+                'subject_id'    => $id,
+                'old_values'    => $oldValues
+            ]);
+
             return redirect()->route('web.position.index')->with('success', 'Jabatan berhasil dihapus!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete position: ' . $e->getMessage());
         }
     }

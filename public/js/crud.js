@@ -1,4 +1,4 @@
-function initCrud({ routes, fields, columns, permissions }) {
+function initCrud({ routes, fields, columns, permissions, basePermission }) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -8,7 +8,6 @@ function initCrud({ routes, fields, columns, permissions }) {
     const modal         = $('#crudModal');
     const form          = $('#crudForm');
     const defaultSearch = $('#defaultSearch').val();
-    const segment1      = window.location.pathname.split('/').filter(Boolean).at(-1).replace(/-/g, "_");
     const tableColumns  = [
         { data: 'DT_RowIndex', orderable: false, searchable: false },
 
@@ -19,7 +18,7 @@ function initCrud({ routes, fields, columns, permissions }) {
         })),
     ];
 
-    if(permissions.includes(segment1+'.edit') || permissions.includes(segment1+'.delete')){
+    if(permissions.includes(basePermission+'.edit') || permissions.includes(basePermission+'.delete')){
         tableColumns.push({
             data: 'action',
             orderable: false,

@@ -8,9 +8,11 @@ use App\Models\Employee;
 use App\Models\Insurance;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller{
@@ -80,9 +82,25 @@ class LoginController extends Controller{
 
         $validated = $validator->validated();
 
-        $user = User::where('application_id', '=', 2)->where('email', '=', $validated['email'])->where('password', '=', MD5($validated['password']))->first();
+        $user = User::where('application_id', '=', 2)->where('email', '=', $validated['email'])->first();
         if(!$user){
+            ActivityLogger::failedLogin(['email' => $validated['email'], 'description' => 'User tidak ada!.']);
             return redirect()->route('web.index')->with('error', 'Autentikasi gagal!');
+        }
+
+        $passwordValid = false;
+        if(Hash::check($validated['password'], $user->password)){
+            $passwordValid = true;
+        }else if($user->password === md5($validated['password'])){
+            $passwordValid = true;
+            $user->update([
+                'password' => Hash::make($validated['password'])
+            ]);
+        }
+
+        if (!$passwordValid) {
+            ActivityLogger::failedLogin(['email' => $validated['email'], 'description' => 'Invalid password!.']);
+            return redirect()->back()->with('error', 'Invalid password!');
         }
 
         $permissions = DB::table('security.t_user_roles as ur')
@@ -101,10 +119,14 @@ class LoginController extends Controller{
         // Prevent session fixation
         $request->session()->regenerate();
 
+        ActivityLogger::login();
+
         return redirect()->route('web.index')->with('success', 'Login Berhasil!');
     }
 
     public function logout(Request $request){
+        ActivityLogger::logout();
+
         $request->session()->forget(['user', 'permission', 'webpush_initialized']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();

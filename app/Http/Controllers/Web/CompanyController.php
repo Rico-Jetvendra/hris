@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -44,10 +46,17 @@ class CompanyController extends Controller{
         $validated['company_initial'] = $this->companyInitial($validated['company_name']);
 
         try {
-            Company::create($validated);
+            $id = Company::create($validated);
+
+            ActivityLogger::create([
+                'subject_type'  => 'Company',
+                'subject_id'    => $id->company_id,
+                'new_values'    => $validated
+            ]);
 
             return redirect()->route('web.company.index')->with('success', 'Perusahaan berhasil ditambah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to create company: ' . $e->getMessage());
         }
     }
@@ -58,20 +67,21 @@ class CompanyController extends Controller{
 
     public function data(){
         $query = Company::all();
+        $basePermission = permission();
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
-                if(in_array('company.edit', session('permission', []))){
+                if(in_array($basePermission.'.edit', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->company_id.'">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
 
-                if(in_array('company.delete', session('permission', []))){
+                if(in_array($basePermission.'.delete', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->company_id.'" data-name="'.$row->company_name.'">
                         <i class="bi bi-trash"></i>
@@ -112,10 +122,28 @@ class CompanyController extends Controller{
         $validated['company_initial'] = $this->companyInitial($validated['company_name']);
 
         try {
+            $oldValues = [];
+            $newValues = [];
+
+            foreach ($validated as $field => $value) {
+                if ($data->$field != $value) {
+                    $oldValues[$field] = $data->$field;
+                    $newValues[$field] = $value;
+                }
+            }
+
             $data->update($validated);
+
+            ActivityLogger::update([
+                'subject_type'  => 'Company',
+                'subject_id'    => $id,
+                'new_values'    => $newValues,
+                'old_values'    => $oldValues,
+            ]);
 
             return redirect()->route('web.company.index')->with('success', 'Perusahaan berhasil dirubah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to update company: ' . $e->getMessage());
         }
     }
@@ -124,14 +152,23 @@ class CompanyController extends Controller{
         $data = Company::findOrFail($id);
 
         try {
+            $oldValues = $data->toArray();
+
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            ActivityLogger::delete([
+                'subject_type'  => 'Company',
+                'subject_id'    => $id,
+                'old_values'    => $oldValues
+            ]);
+
             return redirect()->route('web.company.index')->with('success', 'Company deleted successfully!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete company: ' . $e->getMessage());
         }
     }

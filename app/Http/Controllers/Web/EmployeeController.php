@@ -10,13 +10,18 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\EmployeeCompany;
 use App\Models\Position;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
+use App\Services\ActivityLogger;
 use App\Imports\EmployeeImport;
+
 use Carbon\Carbon;
+
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+
+use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
 
 class EmployeeController extends Controller{
     public function index(){
@@ -47,18 +52,33 @@ class EmployeeController extends Controller{
             DB::transaction(function () use ($validated) {
                 $employee = Employee::create($validated['employee']);
 
+                ActivityLogger::create([
+                    'subject_type'  => 'Employee',
+                    'subject_id'    => $employee->employee_id,
+                    'new_values'    => $validated
+                ]);
+
                 $initial = Company::findOrFail($validated['company']['company_id'])->first();
 
                 $validated['company']['employee_nik'] = $this->createNIK($initial['company_initial']);
                 $validated['company']['employee_id'] = $employee->employee_id;
-                $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
+                if (!empty($validated['company']['end_of_contract'])) {
+                    $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
+                }
 
-                EmployeeCompany::create($validated['company']);
+                $idCompany = EmployeeCompany::create($validated['company']);
+
+                ActivityLogger::create([
+                    'subject_type'  => 'Employee Company',
+                    'subject_id'    => $idCompany->employee_company_id,
+                    'new_values'    => $validated
+                ]);
 
             });
 
             return redirect()->route('web.employee.index')->with('success', 'Karyawan berhasil ditambah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to create employee: ' . $e->getMessage());
         }
     }
@@ -69,23 +89,24 @@ class EmployeeController extends Controller{
 
     public function data(){
         $query = $this->sqlQuery();
+        $basePermission = permission();
 
         return DataTables::of($query)
             ->addIndexColumn()
             ->editColumn('entry_date', function($row){
                 return Carbon::parse($row->entry_date)->format('d F Y');
             })
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
-                if(in_array('employee.edit', session('permission', []))){
+                if(in_array($basePermission.'.edit', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->employee_id.'">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
 
-                if(in_array('employee.delete', session('permission', []))){
+                if(in_array($basePermission.'.delete', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->employee_id.'" data-name="'.$row->employee_name.'">
                         <i class="bi bi-trash"></i>
@@ -134,30 +155,69 @@ class EmployeeController extends Controller{
     }
 
     public function update(EmployeeStoreRequest $request, $id){
-        $employee = Employee::findOrFail($id);
-        $company = EmployeeCompany::where('employee_id', $id)->first();
+        $employee   = Employee::findOrFail($id);
+        $company    = EmployeeCompany::where('employee_id', $id)->first();
 
-        $validated = $request->validated();
+        $validated  = $request->validated();
 
         try {
-            DB::transaction(function () use ($employee, $company, $validated) {
+            DB::transaction(function () use ($id, $employee, $company, $validated) {
+                $oldEmployeeValues  = [];
+                $oldCompanyValues   = [];
+                $newEmployeeValues  = [];
+                $newCompanyValues   = [];
+
+                foreach ($validated['employee'] as $field => $value) {
+                    if ($employee->$field != $value) {
+                        $oldEmployeeValues[$field] = $employee->$field;
+                        $newEmployeeValues[$field] = $value;
+                    }
+                }
+
+                foreach ($validated['company'] as $field => $value) {
+                    if ($employee->$field != $value) {
+                        $oldCompanyValues[$field] = $company->$field;
+                        $newCompanyValues[$field] = $value;
+                    }
+                }
+
                 $employee->update($validated['employee']);
 
-                $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
+                ActivityLogger::update([
+                    'subject_type'  => 'Employee',
+                    'subject_id'    => $id,
+                    'new_values'    => $oldEmployeeValues,
+                    'old_values'    => $newEmployeeValues,
+                ]);
+
+                if (!empty($validated['company']['end_of_contract'])) {
+                    $validated['company']['contract_status'] = Carbon::parse($validated['company']['end_of_contract'])->lte(now()) ? 0 : 1;
+                }
                 $company->update($validated['company']);
+
+                ActivityLogger::update([
+                    'subject_type'  => 'Employee Company',
+                    'subject_id'    => $id,
+                    'new_values'    => $oldCompanyValues,
+                    'old_values'    => $newCompanyValues,
+                ]);
             });
 
             return redirect()->route('web.employee.index')->with('success', 'Karyawan berhasil dirubah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to update employee: ' . $e->getMessage());
         }
     }
 
     public function destroy($id){
-        $employee = Employee::findOrFail($id);
-        $company = EmployeeCompany::where('employee_id', $id)->first();
+        $employee   = Employee::findOrFail($id);
+        $company    = EmployeeCompany::where('employee_id', $id)->first();
 
         try {
+            $oldEmployeeValues  = $employee->toArray();
+            $oldCompanyValues   = $company->toArray();
+
             $employee->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
@@ -170,8 +230,21 @@ class EmployeeController extends Controller{
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            ActivityLogger::delete([
+                'subject_type'  => 'Employee',
+                'subject_id'    => $id,
+                'old_values'    => $oldEmployeeValues
+            ]);
+
+            ActivityLogger::delete([
+                'subject_type'  => 'Employee Company',
+                'subject_id'    => $id,
+                'old_values'    => $oldCompanyValues
+            ]);
+
             return redirect()->route('web.employee.index')->with('success', 'Employee deleted successfully!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete employee: ' . $e->getMessage());
         }
     }

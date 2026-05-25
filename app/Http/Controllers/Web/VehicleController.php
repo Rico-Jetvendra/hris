@@ -9,7 +9,9 @@ use App\Models\Company;
 use App\Models\Insurance;
 use App\Models\Vehicle;
 use Carbon\Carbon;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -43,10 +45,17 @@ class VehicleController extends Controller{
         $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
 
         try {
-            Vehicle::create($validated);
+            $id = Vehicle::create($validated);
+
+            ActivityLogger::create([
+                'subject_type'  => 'Vehicle',
+                'subject_id'    => $id->vehicle_id,
+                'new_values'    => $validated
+            ]);
 
             return redirect()->route('web.vehicle.index')->with('success', 'Kendaraan berhasil ditambah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to create vehicle: ' . $e->getMessage());
         }
     }
@@ -57,6 +66,7 @@ class VehicleController extends Controller{
 
     public function data(){
         $query = $this->getSql();
+        $basePermission = permission();
 
         return DataTables::of($query)
             ->addIndexColumn()
@@ -78,17 +88,17 @@ class VehicleController extends Controller{
             ->addColumn('vehicle_reg_due', function($row){
                 return Carbon::parse($row->vehicle_reg_due)->format('d F Y') ?? '-';
             })
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
-                if(in_array('vehicle.edit', session('permission', []))){
+                if(in_array($basePermission.'.edit', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->vehicle_id.'">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
 
-                if(in_array('vehicle.delete', session('permission', []))){
+                if(in_array($basePermission.'.delete', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->vehicle_id.'" data-name="'.$row->vehicle_number.'">
                         <i class="bi bi-trash"></i>
@@ -128,18 +138,36 @@ class VehicleController extends Controller{
     }
 
     public function update(VehicleStoreRequest $request, $id){
+        $data = Vehicle::findOrFail($id);
+
         $validated = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
         $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
 
         try {
-            $data = Vehicle::findOrFail($id);
+            $oldValues = [];
+            $newValues = [];
+
+            foreach ($validated as $field => $value) {
+                if ($data->$field != $value) {
+                    $oldValues[$field] = $data->$field;
+                    $newValues[$field] = $value;
+                }
+            }
 
             $data->update($validated);
 
+            ActivityLogger::update([
+                'subject_type'  => 'Vehicle',
+                'subject_id'    => $id,
+                'new_values'    => $newValues,
+                'old_values'    => $oldValues,
+            ]);
+
             return redirect()->route('web.vehicle.index')->with('success', 'Kendaraan berhasil dirubah!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to update vehicle: ' . $e->getMessage());
         }
     }
@@ -148,14 +176,23 @@ class VehicleController extends Controller{
         $data = Vehicle::findOrFail($id);
 
         try {
+            $oldValues = $data->toArray();
+
             $data->update([
                 'status'        => '0',
                 'deleted_date'  => now(),
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            ActivityLogger::delete([
+                'subject_type'  => 'Vehicle',
+                'subject_id'    => $id,
+                'old_values'    => $oldValues
+            ]);
+
             return redirect()->route('web.vehicle.index')->with('success', 'Vehicle deleted successfully!');
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
         }
     }

@@ -11,20 +11,20 @@
                 'label'         => 'Master',
                 'icon'          => 'bi-gear',
                 'children' => [
-                    ['label' => 'Karyawan', 'route' => 'web.employee.index', 'permission' => 'employee'],
-                    ['label' => 'Kendaraan', 'route' => 'web.vehicle.index', 'permission' => 'vehicle'],
-                    ['label' => 'Asuransi', 'route' => 'web.insurance.index', 'permission' => 'insurance'],
-                    ['label' => 'Perusahaan', 'route' => 'web.company.index', 'permission' => 'company'],
-                    ['label' => 'Jabatan', 'route' => 'web.position.index', 'permission' => 'position'],
-                    ['label' => 'Departemen', 'route' => 'web.department.index', 'permission' => 'department'],
-                    ['label' => 'Cabang', 'route' => 'web.branch.index', 'permission' => 'branch'],
+                    ['label' => 'Karyawan', 'route' => 'web.employee.index', 'permission' => 'master.employee'],
+                    ['label' => 'Kendaraan', 'route' => 'web.vehicle.index', 'permission' => 'master.vehicle'],
+                    ['label' => 'Asuransi', 'route' => 'web.insurance.index', 'permission' => 'master.insurance'],
+                    ['label' => 'Perusahaan', 'route' => 'web.company.index', 'permission' => 'master.company'],
+                    ['label' => 'Jabatan', 'route' => 'web.position.index', 'permission' => 'master.position'],
+                    ['label' => 'Departemen', 'route' => 'web.department.index', 'permission' => 'master.department'],
+                    ['label' => 'Cabang', 'route' => 'web.branch.index', 'permission' => 'master.branch'],
                 ]
             ],
             [
                 'label'         => 'Management',
                 'icon'          => 'bi-person-check',
                 'children' => [
-                    ['label' => 'Penempatan Kendaraan', 'route' => 'web.vehicle-assignment.index', 'permission' => 'vehicle_assignment'],
+                    ['label' => 'Penempatan Kendaraan', 'route' => 'web.vehicle-assignment.index', 'permission' => 'management.vehicle_assignment'],
                 ]
             ]
         ],

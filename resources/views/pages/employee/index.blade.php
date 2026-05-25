@@ -225,7 +225,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="end_of_contract">Akhir Kontrak</label>
-                                        <input class="form-control datepicker" type="text" name="company[end_of_contract]" id="end_of_contract" required/>
+                                        <input class="form-control datepicker" type="text" name="company[end_of_contract]" id="end_of_contract"/>
                                     </div>
                                 </div>
                             </div>
@@ -286,8 +286,9 @@
 
 @include('components.footer')
 <script>
-    let columns = @json($columns);
-    let permissions = @json(session('permission'));
+    const columns           = @json($columns);
+    const permissions       = @json(session('permission'));
+    const basePermission    = "{{ permission() }}";
 
     initCrud({
         routes: {
@@ -326,9 +327,9 @@
             'end_of_contract': 'end_of_contract',
         },
         columns: columns,
-        permissions: permissions
+        permissions: permissions,
+        basePermission: basePermission
     });
-
 
     $(document).ready(function () {
         $('.btn-import').click(() => {

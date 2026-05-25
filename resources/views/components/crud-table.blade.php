@@ -1,14 +1,6 @@
 <div class="card">
     <div class="card-header">
-        @php
-            $page   = request()->segment(1);
-            $page   = implode('_', explode('-', $page));
-            $add    = $page.'.add';
-            $edit   = $page.'.edit';
-            $delete = $page.'.delete';
-        @endphp
-
-        @if(in_array($add, session('permission', [])))
+        @if(in_array(permission('add'), session('permission', [])))
             <button class="btn btn-primary btn-create">
                 <i class="bi bi-plus"></i> Tambah
             </button>
@@ -24,7 +16,11 @@
                         <th>{{ $col['label'] }}</th>
                     @endforeach
 
-                    @if(in_array($edit, session('permission', [])) || in_array($delete, session('permission', [])))
+                    @if(
+                        in_array(permission('edit'), session('permission', []))
+                        ||
+                        in_array(permission('delete'), session('permission', []))
+                    )
                         <th width="120">Aksi</th>
                     @endif
                 </tr>

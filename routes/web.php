@@ -34,14 +34,14 @@ Route::middleware(['web'])->name('web.')->group(function () {
     Route::middleware(['check.session'])->group(function () {
         // DataTables routes
         Route::get('/', [LoginController::class, 'index'])->name('index');
-        Route::get('/position/data', [PositionController::class, 'data'])->name('position.data')->middleware('permission:position');
-        Route::get('/insurance/data', [InsuranceController::class, 'data'])->name('insurance.data')->middleware('permission:insurance');
-        Route::get('/company/data', [CompanyController::class, 'data'])->name('company.data')->middleware('permission:company');
-        Route::get('/employee/data', [EmployeeController::class, 'data'])->name('employee.data')->middleware('permission:employee');
-        Route::get('/vehicle/data', [VehicleController::class, 'data'])->name('vehicle.data')->middleware('permission:vehicle');
-        Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data')->middleware('permission:department');
-        Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data')->middleware('permission:branch');
-        Route::get('/vehicle-assignment/data', [VehicleAssignmentController::class, 'data'])->name('vehicle-assignment.data')->middleware('permission:vehicle_assignment');
+        Route::get('/position/data', [PositionController::class, 'data'])->name('position.data')->middleware('permission:master.position');
+        Route::get('/insurance/data', [InsuranceController::class, 'data'])->name('insurance.data')->middleware('permission:master.insurance');
+        Route::get('/company/data', [CompanyController::class, 'data'])->name('company.data')->middleware('permission:master.company');
+        Route::get('/employee/data', [EmployeeController::class, 'data'])->name('employee.data')->middleware('permission:master.employee');
+        Route::get('/vehicle/data', [VehicleController::class, 'data'])->name('vehicle.data')->middleware('permission:master.vehicle');
+        Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data')->middleware('permission:master.department');
+        Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data')->middleware('permission:master.branch');
+        Route::get('/vehicle-assignment/data', [VehicleAssignmentController::class, 'data'])->name('vehicle-assignment.data')->middleware('permission:management.vehicle_assignment');
         // End DataTables
 
         // Custom Routes
@@ -52,14 +52,14 @@ Route::middleware(['web'])->name('web.')->group(function () {
         // End Custom Routes
 
         // Resources
-        Route::resource('branch', BranchController::class)->middleware('permission:branch');
-        Route::resource('company', CompanyController::class)->middleware('permission:company');
-        Route::resource('department', DepartmentController::class)->middleware('permission:department');
-        Route::resource('employee', EmployeeController::class)->middleware('permission:employee');
-        Route::resource('insurance', InsuranceController::class)->middleware('permission:insurance');
-        Route::resource('position', PositionController::class)->middleware('permission:position');
-        Route::resource('vehicle', VehicleController::class)->middleware('permission:vehicle');
-        Route::resource('vehicle-assignment', VehicleAssignmentController::class)->middleware('permission:vehicle_assignment');
+        Route::resource('branch', BranchController::class)->middleware('permission:master.branch');
+        Route::resource('company', CompanyController::class)->middleware('permission:master.company');
+        Route::resource('department', DepartmentController::class)->middleware('permission:master.department');
+        Route::resource('employee', EmployeeController::class)->middleware('permission:master.employee');
+        Route::resource('insurance', InsuranceController::class)->middleware('permission:master.insurance');
+        Route::resource('position', PositionController::class)->middleware('permission:master.position');
+        Route::resource('vehicle', VehicleController::class)->middleware('permission:master.vehicle');
+        Route::resource('vehicle-assignment', VehicleAssignmentController::class)->middleware('permission:management.vehicle_assignment');
         // End Resources
 
     });

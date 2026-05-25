@@ -38,8 +38,9 @@
 @include('components.footer')
 
 <script>
-    let columns     = @json($columns);
-    let permissions = @json(session('permission'));
+    const columns           = @json($columns);
+    const permissions       = @json(session('permission'));
+    const basePermission    = "{{ permission() }}";
 
     initCrud({
         routes: {
@@ -54,6 +55,7 @@
             'remarks': 'remarks'
         },
         columns: columns,
-        permissions: permissions
+        permissions: permissions,
+        basePermission: basePermission
     });
 </script>

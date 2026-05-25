@@ -25,10 +25,10 @@ class EmployeeStoreRequest extends FormRequest{
             'employee.employee_education'  => 'nullable|integer',
             'employee.employee_father'     => 'nullable|string|max:100',
             'employee.employee_mother'     => 'nullable|string|max:100',
-            'employee.employee_email'      => 'nullable|email|max:100',
+            'employee.employee_email'      => 'nullable|string|max:100',
             'employee.employee_address'    => 'nullable|string',
-            'employee.employee_home_phone' => 'nullable|string|max:16',
-            'employee.employee_phone'      => 'nullable|string|max:16',
+            'employee.employee_home_phone' => 'nullable|string',
+            'employee.employee_phone'      => 'nullable|string',
 
             'employee.employee_remarks'    => 'nullable|string',
 
@@ -38,7 +38,7 @@ class EmployeeStoreRequest extends FormRequest{
             'company.department_id'       => 'required|integer',
             'company.position_id'         => 'required|integer',
             'company.entry_date'          => 'required|date',
-            'company.end_of_contract'     => 'required|date',
+            'company.end_of_contract'     => 'nullable|date',
         ];
     }
 }

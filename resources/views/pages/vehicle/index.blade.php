@@ -207,9 +207,10 @@
 @include('components.footer')
 
 <script>
-    let columns = @json($columns);
-    let plate   = document.getElementById('vehicle_number');
-    let permissions = @json(session('permission'));
+    const plate             = document.getElementById('vehicle_number');
+    const columns           = @json($columns);
+    const permissions       = @json(session('permission'));
+    const basePermission    = "{{ permission() }}";
 
     initCrud({
         routes: {
@@ -241,7 +242,8 @@
             'remarks'                    : 'vehicle_remarks',
         },
         columns: columns,
-        permissions: permissions
+        permissions: permissions,
+        basePermission: basePermission
     });
 
     plate.addEventListener('input', (e) => {
