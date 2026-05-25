@@ -68,20 +68,21 @@ class VehicleAssignmentController extends Controller{
 
     public function data(){
         $query = $this->getSqlQuery();
+        $basePermission = permission();
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
-                if(in_array('vehicle_assignment.edit', session('permission', []))){
+                if(in_array($basePermission.'.edit', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-warning btn-edit text-white" data-id="'.$row->vehicle_assignment_id.'">
                         <i class="bi bi-pencil"></i>
                     </button>';
                 }
 
-                if(in_array('vehicle_assignment.delete', session('permission', []))){
+                if(in_array($basePermission.'.delete', session('permission', []))){
                     $buttons .= '
                     <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->vehicle_assignment_id.'" data-name="'.$row->vehiclet_number.'">
                         <i class="bi bi-trash"></i>
