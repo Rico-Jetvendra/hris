@@ -19,6 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/crud.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
 
@@ -120,6 +121,7 @@
             });
         </script>
     @endif
+    @stack('scripts')
   </body>
   <!--end::Body-->
 </html>

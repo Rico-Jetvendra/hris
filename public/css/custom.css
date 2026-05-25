@@ -41,3 +41,28 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
     content: '−';
     background-color: #dc3545;
 }
+.table td,
+.table th {
+    padding: 0.85rem;
+}
+.card-header {
+    background: #fff;
+    font-weight: 600;
+    border-bottom: 1px solid #f1f5f9;
+}
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+.card-body {
+    padding: 1.5rem;
+}
+.accordion-button {
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.accordion-item {
+    border: none !important;
+}
