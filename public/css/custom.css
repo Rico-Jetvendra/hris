@@ -59,10 +59,22 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
     padding: 1.5rem;
 }
 .accordion-button {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
     box-shadow: none !important;
     border: none !important;
 }
 
 .accordion-item {
     border: none !important;
+}
+
+.dataTables_filter input,
+.dataTables_length select {
+    border-radius: 10px !important;
+}
+.pagination .page-link {
+    border-radius: 8px !important;
 }
