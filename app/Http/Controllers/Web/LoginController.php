@@ -143,15 +143,18 @@ class LoginController extends Controller{
         $today      = Carbon::today();
         $nextWeek   = Carbon::today()->addWeek();
 
-        $vehicle    = Vehicle::where(function ($query) use ($today, $nextWeek) {
+        $vehicle = Vehicle::where(function ($query) use ($today, $nextWeek) {
             $query->where(function ($q) use ($today, $nextWeek) {
-                $q->whereBetween('vehicle_tax_due', [$today, $nextWeek])
-                ->orWhereDate('vehicle_tax_due', '<', $today);
+                $q->whereYear('vehicle_tax_due', now()->year)
+                    ->where(function ($sub) use ($today, $nextWeek) {
+                        $sub->whereBetween('vehicle_tax_due', [$today, $nextWeek])->orWhereDate('vehicle_tax_due', '<', $today);
+                    });
             })
-
             ->orWhere(function ($q) use ($today, $nextWeek) {
-                $q->whereBetween('vehicle_reg_due', [$today, $nextWeek])
-                ->orWhereDate('vehicle_reg_due', '<', $today);
+                $q->whereYear('vehicle_reg_due', now()->year)
+                    ->where(function ($sub) use ($today, $nextWeek) {
+                        $sub->whereBetween('vehicle_reg_due', [$today, $nextWeek])->orWhereDate('vehicle_reg_due', '<', $today);
+                    });
             });
         })->get();
         $employee   = $this->getEmployee()

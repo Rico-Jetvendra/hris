@@ -622,7 +622,7 @@
                                                 $isRegDanger = $regDue->isPast() || $regDue->between($today, $nextWeek);
                                             @endphp
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $loop->iteration }}</td>
                                                 <td><a href="{{ route('web.vehicle.index', ['search' => $vehicle->vehicle_number]) }}" target="_blank">{{ $vehicle->vehicle_number }}</a></td>
                                                 <td class="{{ $isTaxDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($vehicle->vehicle_tax_due)->format('d M Y') }}</td>
                                                 <td class="{{ $isRegDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($vehicle->vehicle_reg_due)->format('d M Y') }}</td>
@@ -666,7 +666,7 @@
                                             @endphp
 
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $loop->iteration }}</td>
 
                                                 <td>
                                                     <a href="{{ route('web.employee.index', ['search' => $h->employee_name]) }}" target="_blank">
@@ -716,7 +716,7 @@
                                                 );
                                             @endphp
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $loop->iteration }}</td>
                                                 <td><a href="{{ route('web.employee.index', ['search' => $employee->employee_name]) }}" target="_blank">{{ $employee->employee_name }}</a></td>
                                                 <td class="{{ $isContractDanger ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($employee->end_of_contract)->format('d M Y') }}</td>
                                             </tr>
