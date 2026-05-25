@@ -112,17 +112,9 @@ class ActivityLogger{
 
     public static function log($data){
         try {
-            $response = Http::withHeaders([
+            Http::withHeaders([
                 'X-API-KEY' => env('LOGGER_API_KEY')
             ])->post(env('LOGGER_URL') . '/logs', $data);
-
-            dd([
-                'status' => $response->status(),
-                'body' => $response->body(),
-                'json' => $response->json(),
-                'successful' => $response->successful(),
-                'failed' => $response->failed(),
-            ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
