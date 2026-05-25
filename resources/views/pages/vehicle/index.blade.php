@@ -19,7 +19,7 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header">
-                        @if(in_array('vehicle.add', session('permission', [])))
+                        @if(in_array(permission('add'), session('permission', [])))
                             <button class="btn btn-primary btn-create"><i class="bi bi-plus"></i> Tambah</button>
                         @endif
                         <!-- <button class="btn btn-danger btn-import"><i class="bi bi-upload"></i> Import</button> -->
