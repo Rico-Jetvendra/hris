@@ -10,7 +10,7 @@ class PermissionMiddleware{
         $permissions = session('permission', []);
 
         if(!in_array($permission, $permissions)){
-            return redirect()->back()->with('error', 'Anda tidak memiliki hak akses!');
+            return redirect()->back()->with('error', 'Anda tidak memiliki hak akses!!');
         }
 
         return $next($request);
