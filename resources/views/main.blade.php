@@ -333,6 +333,106 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0">
+                                Usia Karyawan (Aktif)
+                            </h5>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="chart-wrapper">
+                                    <canvas id="ageChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="accordion mt-3" id="ageAccordion">
+                                <div class="accordion-item border-0">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed py-2"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseAge">
+                                            Detail Data
+                                        </button>
+                                    </h2>
+
+                                    <div id="collapseAge" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            @php
+                                                $ageColors  = [
+                                                    '#3b82f6',
+                                                    '#10b981',
+                                                    '#f59e0b',
+                                                    '#ef4444',
+                                                    '#8b5cf6'
+                                                ];
+                                            @endphp
+                                            @foreach($count['age'] as $key => $item)
+                                                <div class="d-flex justify-content-between">
+                                                    <span>
+                                                        <i class="bi bi-circle-fill" style="color:{{ $ageColors[$key] ?? '#000000' }}"></i>
+                                                        {{ $item['age'] }}
+                                                    </span>
+
+                                                    <strong>{{ $item['total'] ?? 0 }}</strong>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                Pendidikan Terakhir Karyawan (Aktif)
+                            </h5>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="chart-wrapper">
+                                    <canvas id="educationChart"></canvas>
+                                </div>
+                            </div>
+
+
+                            <div class="accordion mt-3" id="educationAccordion">
+                                <div class="accordion-item border-0">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed py-2"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseEducation">
+                                            Detail Data
+                                        </button>
+                                    </h2>
+
+                                    <div id="collapseEducation" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            @foreach(config('combobox.education') as $item)
+                                                <div class="d-flex justify-content-between">
+                                                    <span>
+                                                        <i class="bi bi-circle-fill" style="color:{{ $item['color'] }};"></i>
+                                                        {{ $item['name'] }}
+                                                    </span>
+
+                                                    <strong>{{ $count['education'][$item['id']] ?? 0 }}</strong>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
                                 Karyawan Per Departemen (Aktif)
                             </h5>
                         </div>
@@ -482,106 +582,6 @@
                                                     </span>
 
                                                     <strong>{{ $item['total'] ?? 0 }}</strong>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                Usia Karyawan (Aktif)
-                            </h5>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <div class="chart-wrapper">
-                                    <canvas id="ageChart"></canvas>
-                                </div>
-                            </div>
-
-                            <div class="accordion mt-3" id="ageAccordion">
-                                <div class="accordion-item border-0">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed py-2"
-                                                type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#collapseAge">
-                                            Detail Data
-                                        </button>
-                                    </h2>
-
-                                    <div id="collapseAge" class="accordion-collapse collapse">
-                                        <div class="accordion-body">
-                                            @php
-                                                $ageColors  = [
-                                                    '#3b82f6',
-                                                    '#10b981',
-                                                    '#f59e0b',
-                                                    '#ef4444',
-                                                    '#8b5cf6'
-                                                ];
-                                            @endphp
-                                            @foreach($count['age'] as $key => $item)
-                                                <div class="d-flex justify-content-between">
-                                                    <span>
-                                                        <i class="bi bi-circle-fill" style="color:{{ $ageColors[$key] ?? '#000000' }}"></i>
-                                                        {{ $item['age'] }}
-                                                    </span>
-
-                                                    <strong>{{ $item['total'] ?? 0 }}</strong>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                Pendidikan Terakhir Karyawan (Aktif)
-                            </h5>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <div class="chart-wrapper">
-                                    <canvas id="educationChart"></canvas>
-                                </div>
-                            </div>
-
-
-                            <div class="accordion mt-3" id="educationAccordion">
-                                <div class="accordion-item border-0">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed py-2"
-                                                type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#collapseEducation">
-                                            Detail Data
-                                        </button>
-                                    </h2>
-
-                                    <div id="collapseEducation" class="accordion-collapse collapse">
-                                        <div class="accordion-body">
-                                            @foreach(config('combobox.education') as $item)
-                                                <div class="d-flex justify-content-between">
-                                                    <span>
-                                                        <i class="bi bi-circle-fill" style="color:{{ $item['color'] }};"></i>
-                                                        {{ $item['name'] }}
-                                                    </span>
-
-                                                    <strong>{{ $count['education'][$item['id']] ?? 0 }}</strong>
                                                 </div>
                                             @endforeach
                                         </div>
