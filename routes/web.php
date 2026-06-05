@@ -49,6 +49,7 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::post('/vehicle/upload', [VehicleController::class, 'upload'])->name('vehicle.upload');
 
         Route::post('/due-email', [NotificationController::class, 'sendDueEmail'])->name('due.email');
+        Route::delete('/destroy-image/{id}', [VehicleController::class, 'destroyImage'])->name('vehicle.destroyImage');
         // End Custom Routes
 
         // Resources

@@ -36,7 +36,13 @@
                                     @foreach ($columns as $col)
                                         <th>{{ $col['label'] }}</th>
                                     @endforeach
-                                    <th width="80">Aksi</th>
+                                    @if(
+                                        in_array(permission('edit'), session('permission', []))
+                                        ||
+                                        in_array(permission('delete'), session('permission', []))
+                                    )
+                                        <th width="80">Aksi</th>
+                                    @endif
                                 </tr>
                             </thead>
 

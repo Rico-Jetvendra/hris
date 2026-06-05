@@ -31,6 +31,9 @@ class VehicleStoreRequest extends FormRequest{
             'vehicle_insurance'                 => 'nullable|integer',
 
             'remarks'                           => 'nullable|string',
+
+            'document_name'                     => 'nullable|array',
+            'document_name.*'                   => 'file|mimes:jpg,jpeg,png|max:5120'
         ];
     }
 }

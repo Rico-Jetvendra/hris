@@ -8,6 +8,7 @@ use App\Imports\VehicleImport;
 use App\Models\Company;
 use App\Models\Insurance;
 use App\Models\Vehicle;
+use App\Models\VehicleDocument;
 use Carbon\Carbon;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller{
     public function index(){
@@ -46,6 +48,27 @@ class VehicleController extends Controller{
 
         try {
             $id = Vehicle::create($validated);
+            
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+            foreach ($request->file('document_name') as $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = strtolower($file->getClientOriginalExtension());
+
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new \Exception("Invalid file type: {$extension}");
+                }
+
+                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+                $compressed = $this->compressWithImagick($file, $cleanName);
+
+                VehicleDocument::create([
+                    'vehicle_id'        => $id->vehicle_id,
+                    'document_name'     => $compressed['path'],
+                    'document_size'     => $compressed['size'],
+                    'document_type'     => 'jpg',
+                ]);
+            }
 
             ActivityLogger::create([
                 'subject_type'  => 'Vehicle',
@@ -132,15 +155,16 @@ class VehicleController extends Controller{
     }
 
     public function edit($id){
-        $data = $this->getSql()->where('vehicle_id', $id)->first();
+        $data               = $this->getSql()->where('vehicle_id', $id)->first();
+        $data['document']   = VehicleDocument::where('vehicle_id', $id)->get();
 
         return response()->json($data);
     }
 
     public function update(VehicleStoreRequest $request, $id){
-        $data = Vehicle::findOrFail($id);
+        $data       = Vehicle::findOrFail($id);
 
-        $validated = $request->validated();
+        $validated  = $request->validated();
 
         $validated['vehicle_bpkb']              = $request->has('vehicle_bpkb') ? 1: 0;
         $validated['vehicle_insurance_period']  = !empty($validated['vehicle_insurance_start']) ? $validated['vehicle_insurance_start'].' s/d '.$validated['vehicle_insurance_end'] : null;
@@ -157,6 +181,27 @@ class VehicleController extends Controller{
             }
 
             $data->update($validated);
+            
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+            foreach ($request->file('document_name') as $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = strtolower($file->getClientOriginalExtension());
+
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new \Exception("Invalid file type: {$extension}");
+                }
+
+                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+                $compressed = $this->compressWithImagick($file, $cleanName);
+
+                $data = VehicleDocument::create([
+                    'vehicle_id'        => $id,
+                    'document_name'     => $compressed['path'],
+                    'document_size'     => $compressed['size'],
+                    'document_type'     => 'jpg',
+                ]);
+            }
 
             ActivityLogger::update([
                 'subject_type'  => 'Vehicle',
@@ -184,6 +229,8 @@ class VehicleController extends Controller{
                 'deleted_by'    => session('user')->id ?? 1
             ]);
 
+            VehicleDocument::where('vehicle_id', $id)->delete();
+
             ActivityLogger::delete([
                 'subject_type'  => 'Vehicle',
                 'subject_id'    => $id,
@@ -194,6 +241,38 @@ class VehicleController extends Controller{
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyImage($id){
+        $data = VehicleDocument::find($id);
+
+        if(!$data){
+            Log::error("Document Not Found");
+        }
+
+        try {
+            $oldValues = $data->toArray();
+
+            $data->delete();
+            
+            $path = parse_url($data->document_name, PHP_URL_PATH);
+            $path = str_replace('/storage/', '', $path);
+
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            ActivityLogger::delete([
+                'subject_type'  => 'Vehicle Document',
+                'subject_id'    => $id,
+                'old_values'    => $oldValues
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Document deleted successfully!']);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete document: ' . $e->getMessage()]);
         }
     }
 
@@ -261,5 +340,35 @@ class VehicleController extends Controller{
         ];
 
         return $data;
+    }
+
+    private function compressWithImagick($file, $cleanName){
+        $image = new \Imagick($file->getPathname());
+
+        // ✅ Fix rotation
+        $image->autoOrient();
+
+        // Resize
+        $image->resizeImage(1280, 0, \Imagick::FILTER_LANCZOS, 1);
+
+        // Remove metadata
+        $image->stripImage();
+
+        // Convert to JPG
+        $image->setImageFormat('jpeg');
+        $image->setImageCompressionQuality(25);
+
+        $name = time() . '_' . uniqid() . '_' . $cleanName . '.jpg';
+        $fullPath = storage_path('app/public/vehicle/' . $name);
+
+        $image->writeImage($fullPath);
+
+        $image->clear();
+        $image->destroy();
+
+        return [
+            'path' => 'vehicle/' . $name,
+            'size' => filesize($fullPath),
+        ];
     }
 }

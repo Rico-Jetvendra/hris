@@ -65,7 +65,7 @@ $('#crudModal').on('shown.bs.modal', function () {
     document.querySelectorAll('.searchable-select').forEach((el) => {
 
         const label = document.querySelector(`label[for="${el.id}"]`);
-        const text  = label.innerText.trim().replace('(required)', '');
+        const text  = label ? label.innerText.trim().replace('(required)', '') : "";
 
         if (el.options[0].value === '') {
             el.options[0].text =
