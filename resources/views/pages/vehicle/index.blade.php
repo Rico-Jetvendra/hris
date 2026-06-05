@@ -179,7 +179,7 @@
                                         <input class="form-control" type="file" name="document_name[]" id="document_name" multiple accept="image/*" />
                                     </div>
                                     <div class="mb-3 border border-secondary p-3" id="document_div">
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -364,7 +364,7 @@
                     <div class="document-item d-inline-block text-center m-2" data-index="${file.vehicle_document_id}" data-type="edit" data-name="${file_name}">
                         <div class="image-wrapper">
                             <img
-                                src="${file.document_name}"
+                                src="/hris${file.document_name}"
                                 class="img-thumbnail preview-thumbnail"
                                 style="width:140px;height:140px;object-fit:cover;cursor:pointer;"
                             >
@@ -469,7 +469,7 @@
             });
         });
     });
-    
+
     $(document).on('click', '.preview-thumbnail', function () {
         const modal     = $('#imagePreviewModal');
         const document  = $(this).closest('.document-item');
@@ -486,9 +486,9 @@
 
     $('#deleteImageBtn').click(function(){
         const modal = $('#imagePreviewModal');
-        const index = $('#previewImage').attr('data-index');    
-        const type  = $('#previewImage').attr('data-type');    
-        const name  = $('#previewImage').attr('data-name');    
+        const index = $('#previewImage').attr('data-index');
+        const type  = $('#previewImage').attr('data-type');
+        const name  = $('#previewImage').attr('data-name');
 
         Swal.fire({
             title: 'Anda yakin?',
