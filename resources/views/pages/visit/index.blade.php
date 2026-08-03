@@ -325,7 +325,7 @@
 
         attachment.forEach(att => {
             const attachmentHtml = `
-                <div class="col-md-4 card p-2 mb-3 mx-1">
+                <div class="col-md-4 card p-0 mb-3 mx-1">
                     <div class="card-body">
                         <a href="${att.visit_attachment}" target="_blank">
                             <img src="${att.visit_attachment}" class="img-fluid" alt="Attachment">
