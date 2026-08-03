@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\{
     BranchController,
+    CallController,
     CompanyController,
     DepartmentController,
     EmployeeController,
@@ -11,19 +12,10 @@ use App\Http\Controllers\Web\{
     NotificationController,
     PositionController,
     VehicleController,
-    VehicleAssignmentController
+    VehicleAssignmentController,
+    VisitController,
 };
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 Route::middleware(['web'])->name('web.')->group(function () {
     // Login Routes
     Route::get('/signin', [LoginController::class, 'signin'])->name('signin');
@@ -42,11 +34,21 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::get('/department/data', [DepartmentController::class, 'data'])->name('department.data')->middleware('permission:master.department');
         Route::get('/branch/data', [BranchController::class, 'data'])->name('branch.data')->middleware('permission:master.branch');
         Route::get('/vehicle-assignment/data', [VehicleAssignmentController::class, 'data'])->name('vehicle-assignment.data')->middleware('permission:management.vehicle_assignment');
+        Route::get('/call/data', [CallController::class, 'data'])->name('call.data')->middleware('permission:management.call');
+        Route::get('/visit/data', [VisitController::class, 'data'])->name('visit.data')->middleware('permission:management.visit');
         // End DataTables
 
         // Custom Routes
         Route::post('/employee/upload', [EmployeeController::class, 'upload'])->name('employee.upload');
         Route::post('/vehicle/upload', [VehicleController::class, 'upload'])->name('vehicle.upload');
+
+        Route::post('/call/comment', [CallController::class, 'storeComment'])->name('call.comment.store');
+        Route::post('/call/replies', [CallController::class, 'storeReplies'])->name('call.replies.store');
+        Route::delete('/call/comment/{id}', [CallController::class, 'deleteComment'])->name('call.comment.delete');
+
+        Route::post('/visit/comment', [VisitController::class, 'storeComment'])->name('visit.comment.store');
+        Route::post('/visit/replies', [VisitController::class, 'storeReplies'])->name('visit.replies.store');
+        Route::delete('/visit/comment/{id}', [VisitController::class, 'deleteComment'])->name('visit.comment.delete');
 
         Route::post('/due-email', [NotificationController::class, 'sendDueEmail'])->name('due.email');
         Route::delete('/destroy-image/{id}', [VehicleController::class, 'destroyImage'])->name('vehicle.destroyImage');
@@ -61,6 +63,8 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::resource('position', PositionController::class)->middleware('permission:master.position');
         Route::resource('vehicle', VehicleController::class)->middleware('permission:master.vehicle');
         Route::resource('vehicle-assignment', VehicleAssignmentController::class)->middleware('permission:management.vehicle_assignment');
+        Route::resource('call', CallController::class)->middleware('permission:management.call');
+        Route::resource('visit', VisitController::class)->middleware('permission:management.visit');
         // End Resources
 
     });

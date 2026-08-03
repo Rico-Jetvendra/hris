@@ -25,6 +25,8 @@
                 'icon'          => 'bi-person-check',
                 'children' => [
                     ['label' => 'Penempatan Kendaraan', 'route' => 'web.vehicle-assignment.index', 'permission' => 'management.vehicle_assignment'],
+                    ['label' => 'Panggilan', 'route' => 'web.call.index', 'permission' => 'management.call'],
+                    ['label' => 'Kunjungan', 'route' => 'web.visit.index', 'permission' => 'management.visit'],
                 ]
             ]
         ],
