@@ -18,6 +18,7 @@ class CallController extends Controller{
         $data = $this->getSql()->get();
         $columns = [
             ['label' => 'Nama Panggilan', 'field' => 'call_activity'],
+            ['label' => 'Tgl. Panggilan', 'field' => 'call_started'],
         ];
 
         return view('pages.call.index', compact('data', 'columns'));

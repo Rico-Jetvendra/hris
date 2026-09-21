@@ -21,6 +21,7 @@ class VisitController extends Controller{
             ['label' => 'Nama Kunjungan', 'field' => 'visit_name'],
             ['label' => 'Nama Customer', 'field' => 'customer_name'],
             ['label' => 'Nama Sales', 'field' => 'sales_name'],
+            ['label' => 'Tgl. Kunjungan', 'field' => 'visit_start'],
         ];
 
         return view('pages.visit.index', compact('data', 'columns'));
