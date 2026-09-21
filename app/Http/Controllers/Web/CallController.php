@@ -47,6 +47,11 @@ class CallController extends Controller{
 
                 return $buttons;
             })
+            ->filterColumn('sales_name', function ($query, $keyword) {
+                $query->where(function($q) use ($keyword) {
+                    $q->where('ar.repnm', 'like', "%{$keyword}%");
+                });
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
