@@ -19,6 +19,7 @@ class CallController extends Controller{
         $data = $this->getSql()->get();
         $columns = [
             ['label' => 'Nama Panggilan', 'field' => 'call_activity'],
+            ['label' => 'Nama Sales', 'field' => 'sales_name'],
             ['label' => 'Tgl. Panggilan', 'field' => 'call_started'],
         ];
 
