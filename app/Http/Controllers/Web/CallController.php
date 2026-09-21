@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Call;
 use App\Models\CallComment;
 use App\Services\ActivityLogger;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -30,6 +31,9 @@ class CallController extends Controller{
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('call_started', function ($row) {
+                return Carbon::parse($row->call_started)->format("d-m-Y H:i:s");
+            })
             ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 

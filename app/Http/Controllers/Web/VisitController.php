@@ -7,6 +7,7 @@ use App\Models\Visit;
 use App\Models\VisitAttachment;
 use App\Models\VisitComment;
 use App\Services\ActivityLogger;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -33,6 +34,9 @@ class VisitController extends Controller{
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('visit_start', function ($row) {
+                return Carbon::parse($row->visit_start)->format("d-m-Y H:i:s");
+            })
             ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
 
