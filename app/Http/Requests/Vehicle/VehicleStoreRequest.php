@@ -33,7 +33,7 @@ class VehicleStoreRequest extends FormRequest{
             'remarks'                           => 'nullable|string',
 
             'document_name'                     => 'nullable|array',
-            'document_name.*'                   => 'file|mimes:jpg,jpeg,png|max:5120'
+            'document_name.*'                   => 'file|mimes:jpg,jpeg,png,docx,doc,pdf|max:5120'
         ];
     }
 }

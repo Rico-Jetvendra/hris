@@ -48,26 +48,39 @@ class VehicleController extends Controller{
 
         try {
             $id = Vehicle::create($validated);
-            
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-            foreach ($request->file('document_name') as $file) {
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = strtolower($file->getClientOriginalExtension());
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'doc', 'pdf'];
 
-                if (!in_array($extension, $allowedExtensions)) {
-                    throw new \Exception("Invalid file type: {$extension}");
+            if($request->file('document_name')){
+                foreach ($request->file('document_name') as $file) {
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $extension    = strtolower($file->getClientOriginalExtension());
+
+                    if (!in_array($extension, $allowedExtensions)) {
+                        throw new \Exception("Invalid file type: {$extension}");
+                    }
+
+                    $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+
+                    $name     = time() . '_' . uniqid() . '_' . $cleanName . $extension;
+                    $fullPath = storage_path('app/public/vehicle/' . $name);
+                    $path = 'vehicle/' . $name;
+                    $size = filesize($fullPath);
+
+                    if(in_array($extension, ['jpg', 'jpeg', 'png'])){
+                        $compressed = $this->compressWithImagick($file, $cleanName);
+
+                        $path = $compressed['path'];
+                        $size = $compressed['size'];
+                    }
+
+                    VehicleDocument::create([
+                        'vehicle_id'        => $id->vehicle_id,
+                        'document_name'     => $path,
+                        'document_size'     => $size,
+                        'document_type'     => $extension,
+                    ]);
                 }
-
-                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
-                $compressed = $this->compressWithImagick($file, $cleanName);
-
-                VehicleDocument::create([
-                    'vehicle_id'        => $id->vehicle_id,
-                    'document_name'     => $compressed['path'],
-                    'document_size'     => $compressed['size'],
-                    'document_type'     => 'jpg',
-                ]);
             }
 
             ActivityLogger::create([
@@ -181,7 +194,7 @@ class VehicleController extends Controller{
             }
 
             $data->update($validated);
-            
+
             $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
             foreach ($request->file('document_name') as $file) {
@@ -255,7 +268,7 @@ class VehicleController extends Controller{
             $oldValues = $data->toArray();
 
             $data->delete();
-            
+
             $path = parse_url($data->document_name, PHP_URL_PATH);
             $path = str_replace('/storage/', '', $path);
 
