@@ -357,6 +357,9 @@
             for(let key in fields){
                 if(key !== fields[key]){
                     $('#' + key).val(res[key]).trigger('change');
+                    if(document.getElementById(key).tomselect){
+                        document.getElementById(key).tomselect.setValue(res[key]);
+                    }
                 }
                 $('#' + fields[key]).val(res[fields[key]]);
             }
@@ -419,10 +422,6 @@
     });
 
     $(document).ready(function () {
-        // $('.btn-import').click(() => {
-        //     $('#uploadModal').modal('show');
-        // });
-
         $('#document_name').on('change', function () {
             const id = $('#vehicle_id').val();
             // $('#document_div').empty();

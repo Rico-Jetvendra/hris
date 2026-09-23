@@ -61,15 +61,20 @@ $(document).ready(function () {
         }
     });
 });
+
 $('#crudModal').on('shown.bs.modal', function () {
-    document.querySelectorAll('.searchable-select').forEach((el) => {
+    document.querySelectorAll('select.searchable-select').forEach((el, i) => {
+        if (
+            el.options &&
+            el.options.length > 0 &&
+            el.options[0].value === ''
+        ) {
+            const label = document.querySelector(`label[for="${el.id}"]`);
+            const text = label
+                ? label.innerText.trim().replace('(required)', '')
+                : '';
 
-        const label = document.querySelector(`label[for="${el.id}"]`);
-        const text  = label ? label.innerText.trim().replace('(required)', '') : "";
-
-        if (el.options[0].value === '') {
-            el.options[0].text =
-                `----- Pilih ${text} -----`;
+            el.options[0].text = `----- Pilih ${text} -----`;
         }
 
         if (!el.tomselect) {
