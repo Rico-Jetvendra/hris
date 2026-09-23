@@ -60,6 +60,7 @@
 
             <form method="POST" id="crudForm" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="vehicle_id" id="vehicle_id">
                 <input type="hidden" name="_method" id="formMethod" value="POST">
 
                 <div class="modal-header">
@@ -263,6 +264,7 @@
         update: id => "{{ route('web.vehicle.update', ':id') }}".replace(':id', id),
         edit: id => "{{ route('web.vehicle.edit', ':id') }}".replace(':id', id),
         destroy: id => "{{ route('web.vehicle.destroy', ':id') }}".replace(':id', id),
+        upload: id => "{{ route('web.vehicle.uploadDocument', ':id') }}".replace(':id', id),
         data: "{{ route('web.vehicle.data') }}"
     };
     const fields            = {
@@ -334,6 +336,7 @@
     $('.btn-create').click(() => {
         form.trigger('reset');
         form.attr('action', routes.store);
+        $('#vehicle_id').val('');
         $('#formMethod').val('POST');
         $('#modalTitle').text('Tambah');
         modal.modal('show');
@@ -344,6 +347,7 @@
         const id = $(this).data('id');
 
         form.attr('action', routes.update(id));
+        $('#vehicle_id').val(id);
         $('#formMethod').val('PUT');
         $('#modalTitle').text('Edit');
 
@@ -410,29 +414,17 @@
         });
     });
 
-    function destroy(id) {
-        $.post(routes.destroy(id), {
-            _method: 'DELETE'
-        })
-        .done(() => {
-            Swal.fire({
-                title: 'Berhasil!',
-                text: 'Data berhasil dihapus.',
-                icon: 'success'
-            }).then(() => table.draw());
-        });
-    }
-
     plate.addEventListener('input', (e) => {
         e.target.value = formatPlate(e.target.value);
     });
 
     $(document).ready(function () {
-        $('.btn-import').click(() => {
-            $('#uploadModal').modal('show');
-        });
+        // $('.btn-import').click(() => {
+        //     $('#uploadModal').modal('show');
+        // });
 
         $('#document_name').on('change', function () {
+            const id = $('#vehicle_id').val();
             // $('#document_div').empty();
 
             $.each(this.files, function (index, file) {
@@ -466,6 +458,9 @@
                 };
 
                 reader.readAsDataURL(file);
+
+            console.log("UPLOAD");
+            uploadDocument(id, file);
             });
         });
     });
@@ -526,4 +521,39 @@
             }
         });
     });
+
+    function destroy(id) {
+        $.post(routes.destroy(id), {
+            _method: 'DELETE'
+        })
+        .done(() => {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Data berhasil dihapus.',
+                icon: 'success'
+            }).then(() => table.draw());
+        });
+    }
+
+    function uploadDocument(id, file){
+        let formData = new FormData();
+        formData.append('document_name', file);
+
+        $.ajax({
+            url: routes.upload(id),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                console.log('Berhasil');
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 </script>

@@ -49,41 +49,6 @@ class VehicleController extends Controller{
         try {
             $id = Vehicle::create($validated);
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'doc', 'pdf'];
-
-            if($request->file('document_name')){
-                foreach ($request->file('document_name') as $file) {
-                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $extension    = strtolower($file->getClientOriginalExtension());
-
-                    if (!in_array($extension, $allowedExtensions)) {
-                        throw new \Exception("Invalid file type: {$extension}");
-                    }
-
-                    $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
-
-                    $name     = time() . '_' . uniqid() . '_' . $cleanName . $extension;
-                    $fullPath = storage_path('app/public/vehicle/' . $name);
-                    $path = 'vehicle/' . $name;
-                    $size = $file->getSize();
-                    // $size = filesize($fullPath);
-
-                    if(in_array($extension, ['jpg', 'jpeg', 'png'])){
-                        $compressed = $this->compressWithImagick($file, $cleanName);
-
-                        $path = $compressed['path'];
-                        $size = $compressed['size'];
-                    }
-
-                    VehicleDocument::create([
-                        'vehicle_id'        => $id->vehicle_id,
-                        'document_name'     => $path,
-                        'document_size'     => $size,
-                        'document_type'     => $extension,
-                    ]);
-                }
-            }
-
             ActivityLogger::create([
                 'subject_type'  => 'Vehicle',
                 'subject_id'    => $id->vehicle_id,
@@ -196,41 +161,6 @@ class VehicleController extends Controller{
 
             $data->update($validated);
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'doc', 'pdf'];
-
-            if($request->file('document_name')){
-                foreach ($request->file('document_name') as $file) {
-                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $extension    = strtolower($file->getClientOriginalExtension());
-
-                    if (!in_array($extension, $allowedExtensions)) {
-                        throw new \Exception("Invalid file type: {$extension}");
-                    }
-
-                    $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
-
-                    $name     = time() . '_' . uniqid() . '_' . $cleanName . $extension;
-                    $fullPath = storage_path('app/public/vehicle/' . $name);
-                    $path = 'vehicle/' . $name;
-                    $size = $file->getSize();
-                    // $size = filesize($fullPath);
-
-                    if(in_array($extension, ['jpg', 'jpeg', 'png'])){
-                        $compressed = $this->compressWithImagick($file, $cleanName);
-
-                        $path = $compressed['path'];
-                        $size = $compressed['size'];
-                    }
-
-                    VehicleDocument::create([
-                        'vehicle_id'        => $id,
-                        'document_name'     => $path,
-                        'document_size'     => $size,
-                        'document_type'     => $extension,
-                    ]);
-                }
-            }
-
             ActivityLogger::update([
                 'subject_type'  => 'Vehicle',
                 'subject_id'    => $id,
@@ -323,6 +253,59 @@ class VehicleController extends Controller{
             return redirect()->route('web.employee.index')->with('success', 'Karyawan berhasil diupload!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal melakukan import : ' . $e->getMessage());
+        }
+    }
+
+    public function uploadDocument($id, Request $request){
+        $validator = Validator::make($request->all(), [
+            'file'       => 'file|mimes:jpg,jpeg,png,docx,doc,pdf,xls,xlsx',
+        ],[
+            'file.required' => 'File wajib diupload.',
+            'file.file'     => 'File tidak valid.',
+            'file.mimes'    => 'File harus berupa berekstensi (jpg, jpeg, png, docx, doc, pdf, xls, atau xlsx).',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        try{
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'doc', 'pdf'];
+
+            if($request->file('document_name')){
+                $file = $request->file('document_name');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension    = strtolower($file->getClientOriginalExtension());
+
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new \Exception("Invalid file type: {$extension}");
+                }
+
+                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+
+                $name = time() . '_' . uniqid() . '_' . $cleanName . $extension;
+                $path = 'vehicle/' . $name;
+                $size = $file->getSize();
+
+                if(in_array($extension, ['jpg', 'jpeg', 'png'])){
+                    $compressed = $this->compressWithImagick($file, $cleanName);
+
+                    $path = $compressed['path'];
+                    $size = $compressed['size'];
+                }
+
+                VehicleDocument::create([
+                    'vehicle_id'        => $id,
+                    'document_name'     => $path,
+                    'document_size'     => $size,
+                    'document_type'     => $extension,
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Document uploaded successfully!']);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to upload document: ' . $e->getMessage()]);
         }
     }
 
