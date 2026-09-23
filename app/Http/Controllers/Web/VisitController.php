@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Services\ActivityLogger;
 use App\Models\Visit;
 use App\Models\VisitAttachment;
 use App\Models\VisitComment;
-use App\Services\ActivityLogger;
+
 use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+
 use Yajra\DataTables\Facades\DataTables;
+use Geocoder\Laravel\Facades\Geocoder;
 
 class VisitController extends Controller{
     public function index(){
@@ -23,6 +26,8 @@ class VisitController extends Controller{
             ['label' => 'Nama Customer', 'field' => 'customer_name'],
             ['label' => 'Nama Sales', 'field' => 'sales_name'],
             ['label' => 'Tgl. Kunjungan', 'field' => 'visit_start'],
+            ['label' => 'Status Check', 'field' => 'visit_status_check'],
+            ['label' => 'Waktu Check', 'field' => 'visit_check_time'],
         ];
 
         return view('pages.visit.index', compact('data', 'columns'));
@@ -36,6 +41,9 @@ class VisitController extends Controller{
             ->addIndexColumn()
             ->addColumn('visit_start', function ($row) {
                 return Carbon::parse($row->visit_start)->format("d-m-Y H:i:s");
+            })
+            ->addColumn('visit_check_time', function ($row) {
+                return Carbon::parse($row->visit_check_time)->format("d-m-Y H:i:s");
             })
             ->addColumn('action', function ($row) use ($basePermission) {
                 $buttons = '';
@@ -52,19 +60,44 @@ class VisitController extends Controller{
             ->filterColumn('sales_name', function($query, $keyword) {
                 $query->where('rep.repnm', 'like', "%{$keyword}%");
             })
+            ->filterColumn('visit_status_check', function($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
+
+                    if (stripos('Open', $keyword) !== false) {
+                        $q->orWhereNull('t_visit.visit_check_in');
+                    }
+
+                    if (stripos('In', $keyword) !== false) {
+                        $q->orWhere(function ($sub) {
+                            $sub->whereNotNull('t_visit.visit_check_in')
+                                ->whereNull('t_visit.visit_check_out');
+                        });
+                    }
+
+                    if (stripos('Out', $keyword) !== false) {
+                        $q->orWhereNotNull('t_visit.visit_check_out');
+                    }
+                });
+            })
+            ->filterColumn('visit_check_time', function($query, $keyword) {
+                return "";
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
 
     public function edit($id){
-        $information = $this->getSql()->where('t_visit.visit_id', $id)->firstOrFail();
-        $comment     = VisitComment::join('security.tbl_users as u', 'u.id', '=', 't_visit_comment.created_by')->select('t_visit_comment.*', 'u.username')->where('visit_id', $id)->get();
-        $attachment  = VisitAttachment::where('visit_id', $id)->get();
+        $information    = $this->getSql()->where('t_visit.visit_id', $id)->firstOrFail();
+        $comment        = VisitComment::join('security.tbl_users as u', 'u.id', '=', 't_visit_comment.created_by')->select('t_visit_comment.*', 'u.username')->where('visit_id', $id)->get();
+        $attachment     = VisitAttachment::where('visit_id', $id)->get();
 
         $data = [
-            'information' => $information,
-            'comment'     => $comment,
-            'attachment'  => $attachment,
+            'information'           => $information,
+            'comment'               => $comment,
+            'attachment'            => $attachment,
+            'visit_location'        => $this->getLocation($information->visit_latitude, $information->visit_longitude),
+            'check_in_location'     => $this->getLocation($information->check_in_latitude, $information->check_in_longitude),
+            'check_out_location'    => $this->getLocation($information->check_out_latitude, $information->check_out_longitude)
         ];
 
         return response()->json($data);
@@ -206,8 +239,38 @@ class VisitController extends Controller{
                                 ELSE "Unknown"
                             END as customer_type_name
                         '),
+                        DB::raw('
+                            CASE
+                                WHEN t_visit.visit_check_in IS NULL THEN "Open"
+                                WHEN t_visit.visit_check_in IS NOT NULL AND t_visit.visit_check_out IS NULL THEN "In"
+                                WHEN t_visit.visit_check_out IS NOT NULL THEN "Out"
+                                ELSE "Unknown"
+                            END as visit_status_check
+                        '),
+                        DB::raw('
+                            CASE
+                                WHEN t_visit.visit_check_in IS NULL THEN t_visit.created_date
+                                WHEN t_visit.visit_check_in IS NOT NULL AND t_visit.visit_check_out IS NULL THEN t_visit.visit_check_in
+                                WHEN t_visit.visit_check_out IS NOT NULL THEN t_visit.visit_check_out
+                                ELSE t_visit.created_date
+                            END as visit_check_time
+                        '),
                     );
 
         return $sql;
+    }
+
+    private function getLocation($lat, $long){
+        $places     = "-";
+        if ($lat < -90 || $lat > 90 || $long < -180 || $long > 180) {
+            return "-";
+        }
+
+        $location   = Geocoder::reverse($lat, $long)->get();
+        if(!$location->isEmpty()){
+            $places = $location->first()->getFormattedAddress();
+        }
+
+        return $places;
     }
 }

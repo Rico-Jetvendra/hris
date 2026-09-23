@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.0",
         "maatwebsite/excel": "3.1.30",
         "realrashid/sweet-alert": "^7.3",
+        "toin0u/geocoder-laravel": "^4.4",
         "yajra/laravel-datatables-oracle": "^9.21"
     },
     "require-dev": {
@@ -28,7 +29,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "laravel": {

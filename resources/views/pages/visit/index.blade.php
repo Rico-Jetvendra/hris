@@ -132,10 +132,24 @@
                             <div class="card-body">
 
                                 <div class="row mb-2">
+                                    <div class="col-md-4 fw-semibold">Visit Location</div>
+                                    <div class="col-md-8">
+                                        <span id="visit_location"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
                                     <div class="col-md-4 fw-semibold">Visit Coordinate</div>
                                     <div class="col-md-8">
                                         <span id="visit_latitude"></span>,
                                         <span id="visit_longitude"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-4 fw-semibold">Check In Location</div>
+                                    <div class="col-md-8">
+                                        <span id="check_in_location"></span>
                                     </div>
                                 </div>
 
@@ -151,6 +165,13 @@
                                     <div class="col-md-4 fw-semibold">Check In Time</div>
                                     <div class="col-md-8">
                                         <span id="visit_check_in"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-4 fw-semibold">Check Out Location</div>
+                                    <div class="col-md-8">
+                                        <span id="check_out_location">-</span>
                                     </div>
                                 </div>
 
@@ -254,6 +275,10 @@
             renderInformation(modal, res.information);
             renderAttachment(modal, res.attachment);
             renderComments(modal, res.comment);
+
+            $("#visit_location").text(res.visit_location);
+            $("#check_in_location").text(res.check_in_location);
+            $("#check_out_location").text(res.check_out_location);
 
             $('.btn-view').prop('disabled', false);
             modal.modal('show');
