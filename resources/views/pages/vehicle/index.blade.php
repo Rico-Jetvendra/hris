@@ -284,7 +284,7 @@
         'vehicle_insurance_period'   : 'vehicle_insurance_period',
         'vehicle_insurance_start'    : 'vehicle_insurance_start',
         'vehicle_insurance_end'      : 'vehicle_insurance_end',
-        'vehicle_insurance'          : 'vehicle_insurance',
+        'vehicle_insurance'          : 'insurance_name',
 
         'remarks'                    : 'remarks',
     };
