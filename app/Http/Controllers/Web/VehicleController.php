@@ -65,7 +65,8 @@ class VehicleController extends Controller{
                     $name     = time() . '_' . uniqid() . '_' . $cleanName . $extension;
                     $fullPath = storage_path('app/public/vehicle/' . $name);
                     $path = 'vehicle/' . $name;
-                    $size = filesize($fullPath);
+                    $size = $file->getSize();
+                    // $size = filesize($fullPath);
 
                     if(in_array($extension, ['jpg', 'jpeg', 'png'])){
                         $compressed = $this->compressWithImagick($file, $cleanName);
@@ -195,25 +196,37 @@ class VehicleController extends Controller{
 
             $data->update($validated);
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'doc', 'pdf'];
 
             if($request->file('document_name')){
                 foreach ($request->file('document_name') as $file) {
                     $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $extension = strtolower($file->getClientOriginalExtension());
+                    $extension    = strtolower($file->getClientOriginalExtension());
 
                     if (!in_array($extension, $allowedExtensions)) {
                         throw new \Exception("Invalid file type: {$extension}");
                     }
 
                     $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
-                    $compressed = $this->compressWithImagick($file, $cleanName);
 
-                    $data = VehicleDocument::create([
+                    $name     = time() . '_' . uniqid() . '_' . $cleanName . $extension;
+                    $fullPath = storage_path('app/public/vehicle/' . $name);
+                    $path = 'vehicle/' . $name;
+                    $size = $file->getSize();
+                    // $size = filesize($fullPath);
+
+                    if(in_array($extension, ['jpg', 'jpeg', 'png'])){
+                        $compressed = $this->compressWithImagick($file, $cleanName);
+
+                        $path = $compressed['path'];
+                        $size = $compressed['size'];
+                    }
+
+                    VehicleDocument::create([
                         'vehicle_id'        => $id,
-                        'document_name'     => $compressed['path'],
-                        'document_size'     => $compressed['size'],
-                        'document_type'     => 'jpg',
+                        'document_name'     => $path,
+                        'document_size'     => $size,
+                        'document_type'     => $extension,
                     ]);
                 }
             }
