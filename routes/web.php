@@ -41,6 +41,7 @@ Route::middleware(['web'])->name('web.')->group(function () {
         // Custom Routes
         Route::post('/employee/upload', [EmployeeController::class, 'upload'])->name('employee.upload');
         Route::post('/vehicle/upload', [VehicleController::class, 'upload'])->name('vehicle.upload');
+        Route::post('/vehicle/uploadDocument/{id}', [VehicleController::class, 'uploadDocument'])->name('vehicle.uploadDocument');
 
         Route::post('/call/comment', [CallController::class, 'storeComment'])->name('call.comment.store');
         Route::post('/call/replies', [CallController::class, 'storeReplies'])->name('call.replies.store');
