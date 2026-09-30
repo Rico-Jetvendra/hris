@@ -40,7 +40,7 @@ class VisitController extends Controller{
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('visit_start', function ($row) {
-                return Carbon::parse($row->visit_start)->format("d-m-Y H:i:s");
+                return $row->visit_start ? Carbon::parse($row->visit_start)->format("d-m-Y H:i:s") : null;
             })
             ->addColumn('visit_check_time', function ($row) {
                 return Carbon::parse($row->visit_check_time)->format("d-m-Y H:i:s");
