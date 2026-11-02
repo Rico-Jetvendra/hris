@@ -39,6 +39,7 @@ class EmployeeStoreRequest extends FormRequest{
             'company.position_id'         => 'required|integer',
             'company.entry_date'          => 'required|date',
             'company.end_of_contract'     => 'nullable|date',
+            'company.leave_entitlement'   => 'required|integer',
         ];
     }
 }

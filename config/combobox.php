@@ -18,6 +18,7 @@
                     ['label' => 'Jabatan', 'route' => 'web.position.index', 'permission' => 'master.position'],
                     ['label' => 'Departemen', 'route' => 'web.department.index', 'permission' => 'master.department'],
                     ['label' => 'Cabang', 'route' => 'web.branch.index', 'permission' => 'master.branch'],
+                    ['label' => 'Cuti', 'route' => 'web.master-leave.index', 'permission' => 'master.master-leave'],
                 ]
             ],
             [
@@ -27,6 +28,8 @@
                     ['label' => 'Penempatan Kendaraan', 'route' => 'web.vehicle-assignment.index', 'permission' => 'management.vehicle_assignment'],
                     ['label' => 'Panggilan', 'route' => 'web.call.index', 'permission' => 'management.call'],
                     ['label' => 'Kunjungan', 'route' => 'web.visit.index', 'permission' => 'management.visit'],
+                    ['label' => 'Cuti', 'route' => 'web.leave.index', 'permission' => 'management.leave'],
+                    ['label' => 'Permintaan Cuti', 'route' => 'web.leave-request.index', 'permission' => 'management.leave-request'],
                 ]
             ]
         ],

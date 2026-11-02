@@ -9,18 +9,10 @@ use Carbon\Carbon;
 
 class EmployeeCompany extends Model{
     protected $table = 't_employee_company';
-
     protected $primaryKey = 'employee_company_id';
-
     public $incrementing = true;
-
     protected $keyType = 'int';
-
-    public $timestamps = true;
-
-    const CREATED_AT = 'created_date';
-    const UPDATED_AT = 'updated_date';
-    const DELETED_AT = 'deleted_date';
+    public $timestamps = false;
 
     protected $fillable = [
         'employee_nik',
@@ -32,6 +24,7 @@ class EmployeeCompany extends Model{
         'entry_date',
         'end_of_contract',
         'contract_status',
+        'leave_entitlement',
         'status',
         'created_by',
         'updated_by',

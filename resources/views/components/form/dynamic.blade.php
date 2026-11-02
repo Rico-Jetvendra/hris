@@ -5,6 +5,7 @@
         @break
 
     @case('email')
+    @case('number')
     @case('text')
         <x-form.input :field="$field" />
         @break

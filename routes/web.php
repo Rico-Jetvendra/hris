@@ -9,6 +9,9 @@ use App\Http\Controllers\Web\{
     EmployeeController,
     InsuranceController,
     LoginController,
+    LeaveController,
+    LeaveRequestController,
+    MasterLeaveController,
     NotificationController,
     PositionController,
     VehicleController,
@@ -36,6 +39,9 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::get('/vehicle-assignment/data', [VehicleAssignmentController::class, 'data'])->name('vehicle-assignment.data')->middleware('permission:management.vehicle_assignment');
         Route::get('/call/data', [CallController::class, 'data'])->name('call.data')->middleware('permission:management.call');
         Route::get('/visit/data', [VisitController::class, 'data'])->name('visit.data')->middleware('permission:management.visit');
+        Route::get('/leave/data', [LeaveController::class, 'data'])->name('leave.data')->middleware('permission:management.leave');
+        Route::get('/leave-request/data', [LeaveRequestController::class, 'data'])->name('leave-request.data')->middleware('permission:management.leave-request');
+        Route::get('/master-leave/data', [MasterLeaveController::class, 'data'])->name('master-leave.data')->middleware('permission:management.master-leave');
         // End DataTables
 
         // Custom Routes
@@ -53,6 +59,8 @@ Route::middleware(['web'])->name('web.')->group(function () {
 
         Route::post('/due-email', [NotificationController::class, 'sendDueEmail'])->name('due.email');
         Route::delete('/destroy-image/{id}', [VehicleController::class, 'destroyImage'])->name('vehicle.destroyImage');
+        Route::post('/generate', [LeaveController::class, 'generate'])->name('leave.generate');
+        Route::post('/minus', [LeaveController::class, 'minus'])->name('leave.minus');
         // End Custom Routes
 
         // Resources
@@ -66,6 +74,9 @@ Route::middleware(['web'])->name('web.')->group(function () {
         Route::resource('vehicle-assignment', VehicleAssignmentController::class)->middleware('permission:management.vehicle_assignment');
         Route::resource('call', CallController::class)->middleware('permission:management.call');
         Route::resource('visit', VisitController::class)->middleware('permission:management.visit');
+        Route::resource('leave', LeaveController::class)->middleware('permission:management.leave');
+        Route::resource('leave-request', LeaveRequestController::class)->middleware('permission:management.leave-request');
+        Route::resource('master-leave', MasterLeaveController::class)->middleware('permission:management.master-leave');
         // End Resources
 
     });

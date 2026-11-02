@@ -209,6 +209,10 @@
                                         <label class="form-label" for="entry_date">Tgl. Masuk</label>
                                         <input class="form-control datepicker" type="text" name="company[entry_date]" id="entry_date" required/>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="leave_entitlement">Jatah Cuti</label>
+                                        <input class="form-control" type="number" name="company[leave_entitlement]" id="leave_entitlement"/>
+                                    </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="mb-3">
@@ -331,6 +335,7 @@
             'position_id': 'position_name',
             'entry_date': 'entry_date',
             'end_of_contract': 'end_of_contract',
+            'leave_entitlement': 'leave_entitlement',
         },
         columns: columns,
         permissions: permissions,
