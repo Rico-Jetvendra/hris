@@ -58,7 +58,13 @@ class VisitController extends Controller{
                 return $buttons;
             })
             ->filterColumn('sales_name', function($query, $keyword) {
-                $query->where('rep.repnm', 'like', "%{$keyword}%");
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('rep.repnm', 'like', "%{$keyword}%")
+                        ->orWhere(function ($sub) use ($keyword) {
+                            $sub->where('t_visit.kode_sales', 0)
+                                ->where('u.username', 'like', "%{$keyword}%");
+                        });
+                });
             })
             ->filterColumn('visit_status_check', function($query, $keyword) {
                 $query->where(function ($q) use ($keyword) {
@@ -217,10 +223,11 @@ class VisitController extends Controller{
     }
 
     private function getSql(){
-        $sql = Visit::join('phidb.arsalesrep as rep', 't_visit.kode_sales', '=', 'rep.id')
+        $sql = Visit::leftJoin('phidb.arsalesrep as rep', 't_visit.kode_sales', '=', 'rep.id')
+                    ->leftJoin('security.tbl_users as u', 'u.id', '=', 't_visit.created_by')
                     ->select(
                         't_visit.*',
-                        'rep.repnm as sales_name',
+                        DB::raw('CASE WHEN t_visit.kode_sales = 0 THEN u.username ELSE rep.repnm END as sales_name'),
                         DB::raw(
                             'CASE
                                 WHEN t_visit.visit_status = 1 THEN "Planned"

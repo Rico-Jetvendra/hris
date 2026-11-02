@@ -34,6 +34,7 @@ class EmployeeController extends Controller{
             ['label' => 'Tgl. Masuk', 'field' => 'entry_date', 'searchable' => false],
             ['label' => 'Cabang', 'field' => 'branch_name'],
             ['label' => 'Telpon', 'field' => 'employee_phone'],
+            ['label' => 'Cuti', 'field' => 'leave_entitlement'],
             ['label' => 'Status', 'field' => 'contract_status'],
         ];
         $combo = $this->getSelect();
@@ -175,7 +176,7 @@ class EmployeeController extends Controller{
                 }
 
                 foreach ($validated['company'] as $field => $value) {
-                    if ($employee->$field != $value) {
+                    if ($company->$field != $value) {
                         $oldCompanyValues[$field] = $company->$field;
                         $newCompanyValues[$field] = $value;
                     }
@@ -311,6 +312,7 @@ class EmployeeController extends Controller{
                             'ec.entry_date as entry_date',
                             'ec.end_of_contract',
                             'ec.employee_nik as employee_nik',
+                            'ec.leave_entitlement',
                             DB::raw(
                                 '
                                     CASE
